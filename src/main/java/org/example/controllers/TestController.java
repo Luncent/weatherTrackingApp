@@ -9,13 +9,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @Controller
 public class TestController {
 
-
     @GetMapping("/test")
     public String test(){
         System.out.println("req");
         return "index";
     }
-
 
     @PostConstruct
     public void initCallback(){
