@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+        xmlns:pro="http://www.liquibase.org/xml/ns/pro"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd
+        http://www.liquibase.org/xml/ns/dbchangelog-ext
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd
+        http://www.liquibase.org/xml/ns/pro
+        http://www.liquibase.org/xml/ns/pro/liquibase-pro-latest.xsd">
+
+    <changeSet id="v1-2" author="Dima (generated)">
+
+        <createTable tableName="locations">
+            <column name="id" type="bigint">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="name" type="character varying"/>
+            <column name="latitude" type="decimal"/>
+            <column name="longitude" type="decimal"/>
+            <column name="user_id" type="bigint">
+                <constraints
+                        references="users(id)"
+                        deleteCascade="true"
+                        foreignKeyName="users_locations"
+                />
+            </column>
+        </createTable>
+
+        <addUniqueConstraint
+                tableName="locations" columnNames="name, latitude, longitude"
+        />
+
+        <createTable tableName="sessions">
+            <column name="id" type="uuid">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="expires_at" type="datetime"/>
+            <column name="user_id" type="bigint">
+                <constraints
+                        references="users(id)"
+                        deleteCascade="true"
+                        foreignKeyName="users_sessions"
+                />
+            </column>
+        </createTable>
+
+    </changeSet>
+
+</databaseChangeLog>

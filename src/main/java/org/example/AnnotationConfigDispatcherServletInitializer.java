@@ -1,9 +1,19 @@
-package org.example.controllers;
+package org.example;
 
-import org.example.controllers.config.SpringMVCConfig;
+import jakarta.servlet.ServletContext;
+import jakarta.servlet.ServletException;
+import org.example.config.AppConfig;
+import org.example.config.SpringMVCConfig;
 import org.springframework.web.servlet.support.AbstractAnnotationConfigDispatcherServletInitializer;
 
 public class AnnotationConfigDispatcherServletInitializer extends AbstractAnnotationConfigDispatcherServletInitializer {
+
+    @Override
+    public void onStartup(ServletContext servletContext) throws ServletException {
+        servletContext.setInitParameter("spring.profiles.active", "test");
+        super.onStartup(servletContext);
+    }
+
     @Override
     protected Class<?>[] getRootConfigClasses() {
         return new Class[0];
@@ -12,7 +22,7 @@ public class AnnotationConfigDispatcherServletInitializer extends AbstractAnnota
     @Override
     protected Class<?>[] getServletConfigClasses() {
         System.out.println("getServletConfigClasses");
-        return new Class[]{SpringMVCConfig.class};
+        return new Class[]{AppConfig.class};
     }
 
     @Override

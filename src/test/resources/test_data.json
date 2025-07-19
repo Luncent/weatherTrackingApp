@@ -1,0 +1,47 @@
+{
+  "coord": {
+    "lon": 28.3325,
+    "lat": 54.0983
+  },
+  "weather": [
+    {
+      "id": 500,
+      "main": "Rain",
+      "description": "light rain",
+      "icon": "10d"
+    }
+  ],
+  "base": "stations",
+  "main": {
+    "temp": 21.16,
+    "feels_like": 21.42,
+    "temp_min": 21.16,
+    "temp_max": 21.16,
+    "pressure": 1009,
+    "humidity": 80,
+    "sea_level": 1009,
+    "grnd_level": 988
+  },
+  "visibility": 9803,
+  "wind": {
+    "speed": 3.64,
+    "deg": 306,
+    "gust": 4.87
+  },
+  "rain": {
+    "1h": 0.15
+  },
+  "clouds": {
+    "all": 83
+  },
+  "dt": 1752764791,
+  "sys": {
+    "country": "BY",
+    "sunrise": 1752717354,
+    "sunset": 1752776959
+  },
+  "timezone": 10800,
+  "id": 618800,
+  "name": "Zhodzina",
+  "cod": 200
+}
