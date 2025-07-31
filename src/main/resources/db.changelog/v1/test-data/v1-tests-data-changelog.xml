@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+        xmlns:pro="http://www.liquibase.org/xml/ns/pro"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd
+        http://www.liquibase.org/xml/ns/dbchangelog-ext
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd
+        http://www.liquibase.org/xml/ns/pro
+        http://www.liquibase.org/xml/ns/pro/liquibase-pro-latest.xsd">
+
+    <changeSet id="1753958818759-1" author="Dima (generated)" context="test">
+        <insert tableName="users">
+            <column name="id">1</column>
+            <column name="password">$2a$10$ymtRnd0CMN0NsVfQBYAYLO2jo/yLaYb4hfhsAnLEya6Xoifn8booi</column><!-- password == Dima -->
+            <column name="login">Dima</column>
+        </insert>
+    </changeSet>
+
+    <changeSet id="1753974686890-1" author="Dima (generated)" context="test">
+        <insert tableName="locations">
+            <column name="id">1</column>
+            <column name="name">London</column>
+            <column name="latitude">51.5073219</column>
+            <column name="longitude">-0.1276474</column>
+            <column name="user_id">1</column>
+        </insert>
+    </changeSet>
+
+    <changeSet id="1753977120151-1" author="Dima (generated)" context="test">
+        <insert tableName="users">
+            <column name="id">2</column>
+            <column name="login">Andrew</column>
+            <column name="password">$2a$10$X5XyjidIX0nXlKXsTocmg.e8e7frZ7qvymLeffmWYEeipyKyU9Cde</column>
+        </insert>
+        <insert tableName="locations">
+            <column name="id">2</column>
+            <column name="name">London</column>
+            <column name="latitude">42.9832406</column>
+            <column name="longitude">-81.243372</column>
+            <column name="user_id">2</column>
+        </insert>
+    </changeSet>
+
+</databaseChangeLog>

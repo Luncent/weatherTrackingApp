@@ -1,7 +1,10 @@
 package org.example.entities;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 
 import java.math.BigDecimal;
@@ -9,6 +12,9 @@ import java.math.BigDecimal;
 @Entity
 @Table(name="locations")
 @Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class Location {
 
     @Id
@@ -18,4 +24,14 @@ public class Location {
     private String name;
     private BigDecimal latitude;
     private BigDecimal longitude;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
+
+
+    public void setUser(User user){
+        user.getLocations().add(this);
+        this.user = user;
+    }
 }

@@ -7,24 +7,31 @@
             <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"/>
         </Console>
     </Appenders>
+
     <Loggers>
-        <Root level="OFF" additivity="false">
+        <Root level="ERROR" additivity="false">
             <AppenderRef ref="Console"/>
         </Root>
-        <Logger name="org.example" level="debug" additivity="false">
+
+        <!-- Ваше приложение -->
+        <Logger name="org.example" level="DEBUG" additivity="false">
             <AppenderRef ref="MyConsoleLog"/>
         </Logger>
 
+        <!-- HikariCP -->
+        <Logger name="com.zaxxer.hikari" level="INFO"/>
+        <Logger name="com.zaxxer.hikari.pool" level="DEBUG"/>
 
-        <Logger name="com.zaxxer.hikari" level="INFO" additivity="false">
-            <AppenderRef ref="Console"/>
-        </Logger> <!-- Основные события -->
-        <Logger name="com.zaxxer.hikari.pool" level="DEBUG" additivity="false">
-            <AppenderRef ref="Console"/>
-        </Logger> <!-- Детали работы пула -->
-        <Logger name="org.springframework.orm.hibernate5.HibernateTransactionManager" level="DEBUG" additivity="false">
-            <AppenderRef ref="Console"/>
-        </Logger>
+        <!--<Logger name="org.hibernate.SQL" level="DEBUG"/>-->
 
+        <!-- Параметры запросов (новый путь в Hibernate 6) -->
+        <Logger name="org.hibernate.orm.jdbc.bind" level="TRACE"/>
+
+        <!-- HQL и AST (новые пути) -->
+        <Logger name="org.hibernate.orm.hql" level="DEBUG"/>
+        <Logger name="org.hibernate.orm.hql.ast" level="DEBUG"/>
+
+        <!-- Транзакции -->
+        <Logger name="org.hibernate.orm.transaction" level="DEBUG"/>
     </Loggers>
 </Configuration>

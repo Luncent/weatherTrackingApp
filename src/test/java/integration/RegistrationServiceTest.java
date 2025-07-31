@@ -25,20 +25,13 @@ import org.example.services.RegistrationService;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.sql.SQLException;
-import java.util.UUID;
-import java.util.concurrent.TimeUnit;
-
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static test_constants.UserConstants.ANDREW;
 
-/*@ExtendWith({
-        SpringExtension.class,
-})
-@ContextConfiguration(classes = TestConfig.class)*/
+
 @SpringJUnitConfig(classes = TestConfig.class)
 @TestPropertySource(properties = {"spring.profiles.active=test"})
 @Transactional

@@ -1,10 +1,7 @@
 package org.example.entities;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.List;
 
@@ -24,7 +21,7 @@ public class User {
 
     private String password;
 
-    @OneToMany
-    @JoinColumn(name="user_id")
+    @OneToMany(mappedBy = "user")
+    @ToString.Exclude
     private List<Location> locations;
 }

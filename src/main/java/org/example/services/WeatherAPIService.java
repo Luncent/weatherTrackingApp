@@ -1,57 +1,63 @@
 package org.example.services;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import org.example.dto.WeatherDTO;
+import org.example.dto.LocationWeatherDTO;
+import org.example.dto.UnsavedLocationDTO;
+import org.example.mappers.LocationMapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 
 @Service
 public class WeatherAPIService {
 
     private final String getLocationWeatherByCoordinatesRequestTemplate;
-    private final ObjectMapper objectMapper;
+    private final String getLocationsByCityNameRequestTemplate;
+    private final LocationMapper locationMapper;
     private final HttpClient httpClient;
 
-    public WeatherAPIService(final ObjectMapper objectMapper, final HttpClient httpClient,
-                             @Value("weather_api_key") String apiKey) {
-
+    public WeatherAPIService(final LocationMapper locationMapper, final HttpClient httpClient,
+                             @Value("${weather_api_key}") String apiKey) {
+        this.getLocationsByCityNameRequestTemplate = "http://api.openweathermap.org/geo/1.0/direct?q=%s&limit=5&appid=" + apiKey;
         this.getLocationWeatherByCoordinatesRequestTemplate = "https://api.openweathermap.org/data/2.5/weather?lat=%s&lon=%s&appid=" + apiKey;
-        this.objectMapper = objectMapper;
+        this.locationMapper = locationMapper;
         this.httpClient = httpClient;
     }
 
-    public WeatherDTO getLocationWeatherByCoordinates(BigDecimal longitude, BigDecimal latitude) throws Exception {
+
+    /**
+     * @throws Exception with message that describes weather api call error
+     */
+    public LocationWeatherDTO getLocationWeatherByCoordinates(BigDecimal longitude, BigDecimal latitude) throws Exception {
         HttpRequest getRequest = HttpRequest.newBuilder()
                 .uri(new URI(String.format(getLocationWeatherByCoordinatesRequestTemplate, latitude,longitude)))
                 .GET()
                 .version(HttpClient.Version.HTTP_1_1)
                 .build();
-        //json body
-        //using async so that the httpclient doesn't block himself while the request is being executed,
-        //which would cause other users using methods with HttpClient to be delayed.
 
         CompletableFuture<HttpResponse<String>> futureResponse = httpClient.sendAsync(getRequest, HttpResponse.BodyHandlers.ofString());
-        HttpResponse<String> response = futureResponse.get();
-        String jsonBody = handleResponseAndIfOKReturnBody(response);
-        return convertToDTO(jsonBody);
-        //return convertToDTO(response.get().body());
+        String jsonBody = getResponseBody(futureResponse.get());
+        return locationMapper.convertToLocationWeatherDTO(jsonBody);
     }
 
-    private String handleResponseAndIfOKReturnBody(HttpResponse<String> response) throws Exception {
+
+    public List<UnsavedLocationDTO> getLocationsByCityName(String cityName) throws Exception {
+        HttpRequest getLocationsByNameReq = HttpRequest.newBuilder()
+                .uri(new URI(String.format(getLocationsByCityNameRequestTemplate, cityName)))
+                .GET()
+                .version(HttpClient.Version.HTTP_1_1)
+                .build();
+        CompletableFuture<HttpResponse<String>> responseFuture = httpClient.sendAsync(getLocationsByNameReq, HttpResponse.BodyHandlers.ofString());
+        return locationMapper.convertToLocationDTOList(getResponseBody(responseFuture.get()));
+    }
+
+    private String getResponseBody(HttpResponse<String> response) throws Exception {
         int statusCode = response.statusCode();
         if(is2xx(statusCode)) {
             return response.body();
@@ -76,39 +82,4 @@ public class WeatherAPIService {
     private  boolean is5xx(int statusCode) {
         return statusCode >= 500 && statusCode < 600;
     }
-
-    public WeatherDTO convertToDTO(String jsonString) throws JsonProcessingException {
-        JsonNode rootNode = objectMapper.readTree(jsonString);
-
-        String city = rootNode.get("name").asText();
-
-        JsonNode coordNode = rootNode.get("coord");
-        BigDecimal longitude = coordNode.get("lon").decimalValue();
-        BigDecimal latitude = coordNode.get("lat").decimalValue();
-
-        JsonNode weatherNodes = rootNode.get("weather");
-        String weatherDescription = StreamSupport.stream(weatherNodes.spliterator(), false)
-                .map(weatherNode->weatherNode.get("description").asText())
-                .collect(Collectors.joining(","));
-
-        JsonNode mainNode = rootNode.get("main");
-        BigDecimal temperature = mainNode.get("temp").decimalValue();
-        BigDecimal feelsLikeTemperature = mainNode.get("feels_like").decimalValue();
-        Integer humidity = mainNode.get("humidity").asInt();
-
-        JsonNode sysNode = rootNode.get("sys");
-        String countryCode = sysNode.get("country").asText();
-
-        return WeatherDTO.builder()
-                .temperature(temperature)
-                .feelsLikeTemperature(feelsLikeTemperature)
-                .humidity(humidity)
-                .longitude(longitude)
-                .latitude(latitude)
-                .countryCode(countryCode)
-                .weatherDescription(weatherDescription)
-                .city(city)
-                .build();
-    }
-
 }

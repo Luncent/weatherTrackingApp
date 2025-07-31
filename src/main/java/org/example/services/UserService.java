@@ -37,4 +37,11 @@ public class UserService {
         return userOptional.get();
     }
 
+    public User findById(Long id) throws EntityNotFoundException {
+        Optional<User> userOptional = userRepository.getById(id);
+        if (userOptional.isEmpty()) {
+            throw new EntityNotFoundException();
+        }
+        return userOptional.get();
+    }
 }

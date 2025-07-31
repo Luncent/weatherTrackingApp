@@ -28,10 +28,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.anyString;
 import static test_constants.UserConstants.ANDREW;
 
-/*@ExtendWith({
-        SpringExtension.class,
-})
-@ContextConfiguration(classes = TestConfig.class)*/
+
 @SpringJUnitConfig(classes = TestConfig.class)
 @TestPropertySource(properties = {"spring.profiles.active=test"})
 @Transactional
@@ -59,8 +56,8 @@ public class LoginServiceTest {
         UserDTO newUser = registrationService
                 .register(ANDREW.getLogin(), ANDREW.getPassword(), ANDREW.getRepeatedPassword());
         assertAll(
-                ()->assertThrows(EntityNotFoundException.class, ()->loginService.login(anyString(), ANDREW.getPassword())),
-                ()->assertThrows(EntityNotFoundException.class, ()->loginService.login(ANDREW.getLogin(), anyString()))
+                ()->assertThrows(EntityNotFoundException.class, ()->loginService.login("wrong", ANDREW.getPassword())),
+                ()->assertThrows(EntityNotFoundException.class, ()->loginService.login(ANDREW.getLogin(), "wrong"))
         );
     }
 

@@ -1,7 +1,6 @@
 package org.example.services;
 
 import jakarta.persistence.EntityNotFoundException;
-import lombok.AllArgsConstructor;
 import org.example.entities.HttpSession;
 import org.example.entities.User;
 import org.example.repositories.repos_impl.HttpSessionRepository;
@@ -16,14 +15,14 @@ import java.util.UUID;
 @Service
 public class SessionService {
 
-    private final Duration duration;
+    private final Duration sessionDuration;
 
     private final HttpSessionRepository httpSessionRepository;
 
     public SessionService(HttpSessionRepository httpSessionRepository,
-                          @Value("${session_duration_sec}") int duration) {
+                          @Value("${session_duration_sec}") int sessionDuration) {
         this.httpSessionRepository = httpSessionRepository;
-        this.duration = Duration.ofSeconds(duration);
+        this.sessionDuration = Duration.ofSeconds(sessionDuration);
     }
 
     public HttpSession openSessionForUser(User user) {
@@ -36,15 +35,15 @@ public class SessionService {
         );
     }
 
-    private LocalDateTime countExpirationTime(){
-        return LocalDateTime.now().plus(duration);
-    }
-
     public boolean isSessionActive(UUID uuid) {
         Optional<HttpSession> session = httpSessionRepository.getById(uuid);
         if(session.isEmpty()){
             throw new EntityNotFoundException();
         }
         return  session.get().getExpiresAt().isAfter(LocalDateTime.now());
+    }
+
+    private LocalDateTime countExpirationTime(){
+        return LocalDateTime.now().plus(sessionDuration);
     }
 }
