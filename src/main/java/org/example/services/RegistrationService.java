@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Objects;
+import java.util.UUID;
 
 @Service
 @AllArgsConstructor
@@ -25,10 +26,10 @@ public class RegistrationService {
     private final UserService userService;
     private final SessionService sessionService;
     private final PasswordEncodingService passwordEncodingService;
-    private final UserMapper userMapper;
 
     @Transactional
-    public UserDTO register(String login, String password, String passwordRepeated) throws EntityExistsException, ValidationException, Exception {
+    public UUID register(String login, String password, String passwordRepeated) throws EntityExistsException, ValidationException, Exception {
+        //TODO вынести в валидациб на уровне аргументов контроллера
         if (!Objects.equals(password, passwordRepeated)) {
             log.error(PASSWORDS_MATCH_ERROR);
             throw new ValidationException(PASSWORDS_MATCH_ERROR);
@@ -47,6 +48,6 @@ public class RegistrationService {
             throw new Exception("Some error with db");
         }
         HttpSession session = sessionService.openSessionForUser(newUser);
-        return userMapper.userToUserDTO(newUser, session);
+        return session.getId();
     }
 }

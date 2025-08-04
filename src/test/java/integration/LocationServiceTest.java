@@ -5,20 +5,14 @@ import org.example.entities.Location;
 import org.example.exceptions.EntityExistsException;
 import org.example.exceptions.EntityNotFoundException;
 import org.example.exceptions.UnauthorizedException;
-import org.example.repositories.repos_impl.LocationRepository;
 import org.example.services.LocationService;
 import org.hibernate.SessionFactory;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.PropertySource;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigDecimal;
-import java.util.List;
-
-import static java.math.BigDecimal.valueOf;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertThrows;

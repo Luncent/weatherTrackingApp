@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    
+    <title>Weather Viewer – Sign Up</title>
+    <link th:href="@{/static/css/sign_up_files/bootstrap.min.css}" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/static/css/sign_up_files/style.css}">
+</head>
+<body>
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-6">
+            <div class="weather-logo"
+                 th:attr="style='background-image: url(' + @{/static/images/weather-app.png} + ')'">
+            </div>
+        </div>
+    </div>
+
+    <h2 class="text-center mb-5">Sign Up</h2>
+
+    <div class="row justify-content-center">
+        <div class="col-12 col-lg-4 col-md-6 col-sm-12">
+            <form th:action="@{/registration}" method="post" class="mt-4">
+                <div class="mb-3">
+                    <label for="login" class="form-label">login</label>
+                    <input type="text" class="form-control" id="login" name="login" required="" value="">
+                </div>
+                <div class="mb-3">
+                    <label for="password" class="form-label">Password</label>
+                    <input type="password" class="form-control" id="password" name="password" required="" value="">
+                </div>
+                <div class="mb-3">
+                    <label for="passwordConfirm" class="form-label">Repeat password</label>
+                    <input type="password" class="form-control" id="passwordConfirm" name="passwordConfirm" required="" value="">
+                </div>
+
+                <input type="hidden" name="redirect_to" value="http://localhost/">
+
+                <button type="submit" class="btn btn-primary w-100 mt-3">Sign Up</button>
+                <p class="mt-2 text-center">Already have an account? <a th:href="@{/login}">Sign in here</a></p>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+</body></html>

@@ -1,8 +1,9 @@
 package org.example.services;
 
-import jakarta.persistence.EntityNotFoundException;
 import org.example.entities.HttpSession;
 import org.example.entities.User;
+import org.example.exceptions.EntityNotFoundException;
+import org.example.exceptions.NoAvailableSessionException;
 import org.example.repositories.repos_impl.HttpSessionRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -25,6 +26,15 @@ public class SessionService {
         this.sessionDuration = Duration.ofSeconds(sessionDuration);
     }
 
+
+    public HttpSession findById(UUID id) throws NoAvailableSessionException {
+        Optional<HttpSession> sessionOpt = httpSessionRepository.getById(id);
+        if (sessionOpt.isEmpty() || !isSessionActive(sessionOpt.get())) {
+            throw new NoAvailableSessionException();
+        }
+        return sessionOpt.get();
+    }
+
     public HttpSession openSessionForUser(User user) {
         return httpSessionRepository.save(
                 HttpSession.builder()
@@ -35,15 +45,11 @@ public class SessionService {
         );
     }
 
-    public boolean isSessionActive(UUID uuid) {
-        Optional<HttpSession> session = httpSessionRepository.getById(uuid);
-        if(session.isEmpty()){
-            throw new EntityNotFoundException();
-        }
-        return  session.get().getExpiresAt().isAfter(LocalDateTime.now());
+    private boolean isSessionActive(HttpSession session) {
+        return session.getExpiresAt().isAfter(LocalDateTime.now());
     }
 
-    private LocalDateTime countExpirationTime(){
+    private LocalDateTime countExpirationTime() {
         return LocalDateTime.now().plus(sessionDuration);
     }
 }

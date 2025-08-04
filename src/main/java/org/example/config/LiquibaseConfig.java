@@ -10,7 +10,7 @@ import org.springframework.core.env.Environment;
 import javax.sql.DataSource;
 import java.util.Objects;
 
-@Profile("prod")
+/*@Profile("prod")
 @Configuration
 public class LiquibaseConfig {
     private final DataSource dataSource;
@@ -31,4 +31,4 @@ public class LiquibaseConfig {
         liquibase.setShouldRun(true);
         return liquibase;
     }
-}
+}*/

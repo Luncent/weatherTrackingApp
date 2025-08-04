@@ -5,6 +5,7 @@ import org.checkerframework.checker.units.qual.A;
 import org.example.config.TestConfig;
 import org.example.dto.UserDTO;
 import org.example.exceptions.EntityNotFoundException;
+import org.example.exceptions.NoAvailableSessionException;
 import org.example.services.LoginService;
 import org.example.services.RegistrationService;
 import org.example.services.SessionService;
@@ -20,6 +21,8 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.UUID;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -43,18 +46,18 @@ public class LoginServiceTest {
     @Test
     @DisplayName("user logins existing account and session opens")
     public void existingUserSuccessLoginWithCorrectPasswordAndSessionCreated(@Value("${session_duration_sec}") int sessionTimeSec) throws Exception {
-        UserDTO newUser = registrationService.register(ANDREW.getLogin(), ANDREW.getPassword(), ANDREW.getRepeatedPassword());
+        registrationService.register(ANDREW.getLogin(), ANDREW.getPassword(), ANDREW.getRepeatedPassword());
         SECONDS.sleep(1);
-        UserDTO user = loginService.login(ANDREW.getLogin(), ANDREW.getPassword());
+        UUID sessionId = loginService.login(ANDREW.getLogin(), ANDREW.getPassword());
         SECONDS.sleep(sessionTimeSec - 1);
-        assertThat(sessionService.isSessionActive(user.sessionId().get())).isTrue();
+        Exception ex = assertThrows(NoAvailableSessionException.class, ()->sessionService.findById(sessionId));
+        assertThat(ex).isNull();
     }
 
     @Test
     @DisplayName("user logins with wrong password or login")
     public void userGetsExceptionWhenLoginWithWrongPasswordOrLogin() throws Exception {
-        UserDTO newUser = registrationService
-                .register(ANDREW.getLogin(), ANDREW.getPassword(), ANDREW.getRepeatedPassword());
+        registrationService.register(ANDREW.getLogin(), ANDREW.getPassword(), ANDREW.getRepeatedPassword());
         assertAll(
                 ()->assertThrows(EntityNotFoundException.class, ()->loginService.login("wrong", ANDREW.getPassword())),
                 ()->assertThrows(EntityNotFoundException.class, ()->loginService.login(ANDREW.getLogin(), "wrong"))

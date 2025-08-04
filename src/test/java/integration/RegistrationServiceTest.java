@@ -8,6 +8,7 @@ import org.example.config.TestConfig;
 import org.example.dto.UserDTO;
 import org.example.entities.User;
 import org.example.exceptions.EntityExistsException;
+import org.example.exceptions.NoAvailableSessionException;
 import org.example.exceptions.ValidationException;
 import org.example.services.PasswordEncodingService;
 import org.example.services.SessionService;
@@ -24,6 +25,8 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.example.services.RegistrationService;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.UUID;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
@@ -51,10 +54,10 @@ public class RegistrationServiceTest {
     @Test
     public void registrationOfNonExistingUserWithSessionCreation(@Value("${session_duration_sec}") int sessionTimeSec) throws Exception {
         //register new user
-        UserDTO user = registrationService.register(ANDREW.getLogin(), ANDREW.getPassword(), ANDREW.getRepeatedPassword());
+        UUID sessionId = registrationService.register(ANDREW.getLogin(), ANDREW.getPassword(), ANDREW.getRepeatedPassword());
         SECONDS.sleep(sessionTimeSec-1);
-
-        assertThat(sessionService.isSessionActive(user.sessionId().get())).isTrue();
+        Exception ex = assertThrows(NoAvailableSessionException.class, ()->sessionService.findById(sessionId));
+        assertThat(ex).isNull();
     }
 
     @Test

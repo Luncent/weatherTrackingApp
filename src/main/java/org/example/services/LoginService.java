@@ -9,6 +9,8 @@ import org.example.mappers.UserMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.UUID;
+
 @Service
 @AllArgsConstructor
 public class LoginService {
@@ -16,15 +18,14 @@ public class LoginService {
     private final PasswordEncodingService passwordEncodingService;
     private final UserService userService;
     private final SessionService sessionService;
-    private final UserMapper userMapper;
 
     @Transactional
-    public UserDTO login(String login, String password) throws EntityNotFoundException {
+    public UUID login(String login, String password) throws EntityNotFoundException {
         User user = userService.findByLogin(login);
         if(!passwordEncodingService.isSamePassword(password, user.getPassword())) {
             throw new EntityNotFoundException();
         }
         HttpSession session = sessionService.openSessionForUser(user);
-        return userMapper.userToUserDTO(user,session);
+        return session.getId();
     }
 }
