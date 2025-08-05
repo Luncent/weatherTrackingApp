@@ -36,6 +36,6 @@ public class RegistrationController {
         UUID sessionId = registrationService
                 .register(newUser.getLogin(), newUser.getPassword(), newUser.getPasswordConfirm());
         cookieHandler.setSessionCookie(response, sessionId);
-        return "redirect:/saved_locations";
+        return "redirect:/";
     }
 }

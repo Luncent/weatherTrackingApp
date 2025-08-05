@@ -12,7 +12,7 @@
 
 <nav class="navbar navbar-light bg-light">
     <div class="container-fluid">
-        <a class="navbar-brand" href="https://zhukovsd.github.io/weather-viewer-html-layouts/index.html#">
+        <a class="navbar-brand" th:href="@{/}">
             <img th:src="@{/static/css/saved_locations_files/weather-app.png}" alt="" width="30" height="24"
                  class="d-inline-block align-text-top">
             Weather Tracker
@@ -22,7 +22,7 @@
             <a th:href="@{/sign_out}" class="btn btn-outline-danger">Sign out</a>
         </div>
         <div class="d-flex align-items-center" th:if="${username == null}">
-            <span class="navbar-text me-3">username</span>
+            <span class="navbar-text me-3">Hi!</span>
             <a th:href="@{/login}" class="btn btn-outline-danger">Sign in</a>
         </div>
     </div>
@@ -30,16 +30,16 @@
 
 <section id="page-content">
     <div class="container mt-4">
-        <div class="d-flex my-4">
+        <form th:action="@{/locations/search}" method="get" class="d-flex my-4">
             <div class="input-group location-search-input-group me-3">
-                <input class="form-control" type="text" name="name" placeholder="Enter location" required="">
+                <input class="form-control" type="text" name="city" placeholder="Enter location" required="">
                 <button class="btn btn-outline-secondary btn-sm clear-input-button" type="button"
                         onclick="this.previousElementSibling.value=&#39;&#39;">
                     ×
                 </button>
             </div>
-            <button class="btn btn-outline-success">Search</button>
-        </div>
+            <button class="btn btn-outline-success" type="submit">Search</button>
+        </form>
 
         <div th:if="user">
             <div class="row">

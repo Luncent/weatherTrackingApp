@@ -8,6 +8,7 @@ import org.example.exceptions.EntityNotFoundException;
 import org.example.services.LoginService;
 import org.example.services.UserService;
 import org.springframework.stereotype.Controller;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -28,7 +29,7 @@ public class LoginController {
     }
 
     @PostMapping
-    public String login(UserLoginDTO loginDTO, HttpServletResponse response) throws EntityNotFoundException {
+    public String login(@Validated UserLoginDTO loginDTO, HttpServletResponse response) throws EntityNotFoundException {
         UUID sessionId = loginService.login(loginDTO.getLogin(), loginDTO.getPassword());
         cookieHandler.setSessionCookie(response, sessionId);
         return "redirect:/saved_locations";
