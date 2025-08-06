@@ -1,7 +1,7 @@
 package org.example.dto.requests_dtos;
 
 import lombok.Data;
-import org.example.controllers.validation.interfaces.UserLoginInfo;
+import org.example.controllers.validation.annotations.UserLoginInfo;
 
 @Data
 @UserLoginInfo

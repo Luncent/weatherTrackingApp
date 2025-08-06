@@ -1,7 +1,9 @@
 <!DOCTYPE html>
 <!-- saved from url=(0074)https://zhukovsd.github.io/weather-viewer-html-layouts/search-results.html -->
-<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
     <title>Weather Viewer – Homepage</title>
     <link th:href="@{/static/css/weather-viewer-searchpage_files/bootstrap.min.css}" rel="stylesheet">
     <link rel="stylesheet" th:href="@{/static/css/weather-viewer-searchpage_files/style.css}">
@@ -11,12 +13,15 @@
 <nav class="navbar navbar-light bg-light">
     <div class="container-fluid">
         <a class="navbar-brand" th:href="@{/}">
-            <img th:src="@{/static/css/weather-viewer-searchpage_files/weather-app.png}" alt="" width="30" height="24" class="d-inline-block align-text-top">
+            <img th:src="@{/static/css/weather-viewer-searchpage_files/weather-app.png}" alt="" width="30" height="24"
+                 class="d-inline-block align-text-top">
             Weather Tracker
         </a>
         <div class="d-flex align-items-center" th:if="${username != null}">
             <span class="navbar-text me-3" th:text="${username}">zhukovsd</span>
-            <a th:href="@{/sign_out}" class="btn btn-outline-danger">Sign out</a>
+            <form th:action="@{/sign_out}" method="post">
+                <button  class="btn btn-outline-danger" type="submit">Sign out</button>
+            </form>
         </div>
         <div class="d-flex align-items-center" th:if="${username == null}">
             <span class="navbar-text me-3">Hi!</span>
@@ -29,8 +34,10 @@
     <div class="container mt-4">
         <form th:action="@{/locations/search}" method="get" class="d-flex my-4">
             <div class="input-group location-search-input-group me-3">
-                <input class="form-control" type="text" name="city" placeholder="Enter location" th:value="${searchingCity}" value="San Francisco" required="">
-                <button class="btn btn-outline-secondary btn-sm clear-input-button" type="button" onclick="this.previousElementSibling.value=&#39;&#39;">
+                <input class="form-control" type="text" name="city" placeholder="Enter location"
+                       th:value="${searchingCity}" value="San Francisco" required="">
+                <button class="btn btn-outline-secondary btn-sm clear-input-button" type="button"
+                        onclick="this.previousElementSibling.value=&#39;&#39;">
                     ×
                 </button>
             </div>
@@ -129,4 +136,5 @@
 </footer>
 
 
-</body></html>
+</body>
+</html>

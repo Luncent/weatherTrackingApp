@@ -1,6 +1,7 @@
 package org.example.services;
 
 import lombok.AllArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.example.dto.UserDTO;
 import org.example.entities.HttpSession;
 import org.example.entities.User;
@@ -13,6 +14,7 @@ import java.util.UUID;
 
 @Service
 @AllArgsConstructor
+@Log4j2
 public class LoginService {
 
     private final PasswordEncodingService passwordEncodingService;

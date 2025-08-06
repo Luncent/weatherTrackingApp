@@ -2,36 +2,63 @@ package org.example.controllers;
 
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.example.controllers.cookies.CookieHandler;
 import org.example.dto.requests_dtos.UserLoginDTO;
 import org.example.exceptions.EntityNotFoundException;
 import org.example.services.LoginService;
 import org.example.services.UserService;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.web.servlet.support.RequestContextUtils;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
+
+import static java.util.List.of;
+import static org.example.utils.ControllersUtil.getErrorsMessages;
 
 @Controller
 @RequestMapping("/login")
 @AllArgsConstructor
+@Log4j2
 public class LoginController {
 
     private final LoginService loginService;
     private final CookieHandler cookieHandler;
 
     @GetMapping
-    public String getPage() {
+    public String getPage(Model model) {
         return "login";
     }
 
     @PostMapping
-    public String login(@Validated UserLoginDTO loginDTO, HttpServletResponse response) throws EntityNotFoundException {
-        UUID sessionId = loginService.login(loginDTO.getLogin(), loginDTO.getPassword());
-        cookieHandler.setSessionCookie(response, sessionId);
-        return "redirect:/saved_locations";
+    public String login(@Validated UserLoginDTO loginDTO, BindingResult validationResult,
+                        HttpServletResponse response, RedirectAttributes redirectAttributes){
+        if(validationResult.hasErrors()){
+            redirectAttributes.addFlashAttribute("errors", getErrorsMessages(validationResult));
+            log.debug("validation errors {}", getErrorsMessages(validationResult));
+            return "redirect:/login";
+        }
+        try {
+            UUID sessionId = loginService.login(loginDTO.getLogin(), loginDTO.getPassword());
+            cookieHandler.setSessionCookie(response, sessionId);
+        }
+        catch (EntityNotFoundException ex){
+            log.debug("wrong login or password");
+            //TODO character encoding does not support russian now
+            redirectAttributes.addFlashAttribute("errors", of("Неправильный логин или пароль"));
+            return "redirect:/login";
+        }
+        return "redirect:/";
     }
+
 }

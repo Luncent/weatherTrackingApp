@@ -1,4 +1,4 @@
-<Configuration status="OFF">
+<Configuration status="DEBUG">
     <Appenders>
         <Console name="MyConsoleLog" target="SYSTEM_OUT">
             <PatternLayout pattern="-------%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg---------%n"/>

@@ -45,6 +45,10 @@ public class SessionService {
         );
     }
 
+    public void deleteById(UUID sessionID){
+        httpSessionRepository.delete(sessionID);
+    }
+
     private boolean isSessionActive(HttpSession session) {
         return session.getExpiresAt().isAfter(LocalDateTime.now());
     }

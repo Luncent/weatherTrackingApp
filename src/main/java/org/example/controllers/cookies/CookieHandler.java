@@ -3,13 +3,18 @@ package org.example.controllers.cookies;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.apache.commons.collections4.CollectionUtils;
 import org.example.dto.UserDTO;
 import org.example.exceptions.NoAvailableSessionException;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
+
+import static java.util.Arrays.stream;
 
 @Component
 public class CookieHandler {
@@ -21,7 +26,11 @@ public class CookieHandler {
     }
 
     public UUID getSessionCookie(final HttpServletRequest request) throws NoAvailableSessionException {
-        Optional<Cookie> sessionIdOpt = Arrays.stream(request.getCookies())
+        Cookie[] cookies = request.getCookies();
+        if(cookies==null){
+            throw new NoAvailableSessionException();
+        }
+        Optional<Cookie> sessionIdOpt = stream(cookies)
                 .filter(cookie -> cookie.getName().equals(SESSION_COOKIE_NAME))
                 .findFirst();
         if (sessionIdOpt.isEmpty()) {
@@ -29,4 +38,14 @@ public class CookieHandler {
         }
         return UUID.fromString(sessionIdOpt.get().getValue());
     }
+
+    public UUID removeSessionCookie(HttpServletRequest request, HttpServletResponse response) throws NoAvailableSessionException {
+        UUID sessionID = getSessionCookie(request);
+
+        Cookie cookie = new Cookie(SESSION_COOKIE_NAME, "dummy");
+        cookie.setMaxAge(0);
+        response.addCookie(cookie);
+        return sessionID;
+    }
+
 }

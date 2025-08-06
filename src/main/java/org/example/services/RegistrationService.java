@@ -28,12 +28,7 @@ public class RegistrationService {
     private final PasswordEncodingService passwordEncodingService;
 
     @Transactional
-    public UUID register(String login, String password, String passwordRepeated) throws EntityExistsException, ValidationException, Exception {
-        //TODO вынести в валидациб на уровне аргументов контроллера
-        if (!Objects.equals(password, passwordRepeated)) {
-            log.error(PASSWORDS_MATCH_ERROR);
-            throw new ValidationException(PASSWORDS_MATCH_ERROR);
-        }
+    public UUID register(String login, String password, String passwordRepeated) throws EntityExistsException{
         User newUser = null;
         try {
             newUser = userService.save(login, passwordEncodingService.encryptPassword(password));
@@ -42,10 +37,6 @@ public class RegistrationService {
         catch (ConstraintViolationException e) {
             log.error("user with login exists: "+ e.getMessage());
             throw new EntityExistsException("user with login exists");
-        }
-        catch (Exception e) {
-            log.error(e.getMessage());
-            throw new Exception("Some error with db");
         }
         HttpSession session = sessionService.openSessionForUser(newUser);
         return session.getId();

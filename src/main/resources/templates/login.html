@@ -1,7 +1,9 @@
 <!DOCTYPE html>
 <!-- saved from url=(0079)https://zhukovsd.github.io/weather-viewer-html-layouts/sign-in-with-errors.html -->
-<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
     <title>Weather Viewer – Sign In</title>
     <link th:href="@{/static/css/login_files/bootstrap.min.css}" rel="stylesheet">
     <link rel="stylesheet" th:href="@{/static/css/login_files/style.css}">
@@ -19,9 +21,9 @@
 
     <h2 class="text-center mb-5">Sign In</h2>
 
-    <div class="row justify-content-center">
+    <div class="row justify-content-center" th:if="${errors!=null}">
         <div class="col-12 col-lg-4 col-md-6 col-sm-12">
-            <div class="alert alert-danger" role="alert">
+            <div class="alert alert-danger" role="alert" th:text="${errors}">
                 Invalid username or password.
             </div>
         </div>
@@ -33,11 +35,14 @@
                 <div class="mb-3">
                     <label for="login" class="form-label">Login</label>
 
-                    <div class="input-group has-validation">
+                    <div class="input-group has-validation" th:if="${0==1}">
                         <input type="text" class="form-control is-invalid" id="login" name="login" required="" value="">
                         <div class="invalid-feedback">
                             Invalid login.
                         </div>
+                    </div>
+                    <div class="correct" th:if="${1==1}">
+                        <input type="text" class="form-control" id="login" name="login" required="" value="">
                     </div>
                 </div>
                 <div class="mb-3">
@@ -55,4 +60,5 @@
 </div>
 
 
-</body></html>
+</body>
+</html>
