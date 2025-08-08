@@ -27,6 +27,8 @@ public class RegistrationService {
     private final SessionService sessionService;
     private final PasswordEncodingService passwordEncodingService;
 
+    //TODO add EntityExistsException to transaction rollback classes mb it will handle
+    //TODO it correctly an wont cause UnexpectedRollbackException 
     @Transactional
     public UUID register(String login, String password, String passwordRepeated) throws EntityExistsException{
         User newUser = null;
