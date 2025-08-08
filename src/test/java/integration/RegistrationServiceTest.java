@@ -1,43 +1,25 @@
 package integration;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import org.checkerframework.checker.units.qual.A;
-import org.example.config.SpringMVCConfig;
-import org.example.config.TestConfig;
-import org.example.dto.UserDTO;
-import org.example.entities.User;
+import annotations.IT;
+import org.example.entities.HttpSession;
 import org.example.exceptions.EntityExistsException;
-import org.example.exceptions.NoAvailableSessionException;
-import org.example.exceptions.ValidationException;
 import org.example.services.PasswordEncodingService;
+import org.example.services.RegistrationService;
 import org.example.services.SessionService;
 import org.example.services.UserService;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.PropertySource;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.example.services.RegistrationService;
-import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static test_constants.UserConstants.ANDREW;
 
 
-@SpringJUnitConfig(classes = TestConfig.class)
-@TestPropertySource(properties = {"spring.profiles.active=test"})
-@Transactional
+@IT
 public class RegistrationServiceTest {
 
     @Autowired
@@ -56,8 +38,8 @@ public class RegistrationServiceTest {
         //register new user
         UUID sessionId = registrationService.register(ANDREW.getLogin(), ANDREW.getPassword(), ANDREW.getRepeatedPassword());
         SECONDS.sleep(sessionTimeSec-1);
-        Exception ex = assertThrows(NoAvailableSessionException.class, ()->sessionService.findById(sessionId));
-        assertThat(ex).isNull();
+        HttpSession session = sessionService.findById(sessionId);
+        assertTrue(sessionService.isSessionActive(session));
     }
 
     @Test

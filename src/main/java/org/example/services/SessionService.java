@@ -1,8 +1,8 @@
 package org.example.services;
 
+import lombok.extern.log4j.Log4j2;
 import org.example.entities.HttpSession;
 import org.example.entities.User;
-import org.example.exceptions.EntityNotFoundException;
 import org.example.exceptions.NoAvailableSessionException;
 import org.example.repositories.repos_impl.HttpSessionRepository;
 import org.springframework.beans.factory.annotation.Value;
@@ -14,6 +14,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Service
+@Log4j2
 public class SessionService {
 
     private final Duration sessionDuration;
@@ -49,8 +50,10 @@ public class SessionService {
         httpSessionRepository.delete(sessionID);
     }
 
-    private boolean isSessionActive(HttpSession session) {
-        return session.getExpiresAt().isAfter(LocalDateTime.now());
+    public boolean isSessionActive(HttpSession session) {
+        LocalDateTime now = LocalDateTime.now();
+        log.debug("now time {} and session expires at {}",now,session.getExpiresAt());
+        return session.getExpiresAt().isAfter(now);
     }
 
     private LocalDateTime countExpirationTime() {

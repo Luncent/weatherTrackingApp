@@ -1,6 +1,6 @@
 package integration;
 
-import org.example.config.TestConfig;
+import annotations.IT;
 import org.example.entities.Location;
 import org.example.exceptions.EntityExistsException;
 import org.example.exceptions.EntityNotFoundException;
@@ -9,19 +9,15 @@ import org.example.services.LocationService;
 import org.hibernate.SessionFactory;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
-import org.springframework.transaction.annotation.Transactional;
+
+import java.math.BigDecimal;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
 import static test_constants.LocationDTOConstants.LOCATION_WEATHER_DTO;
 
-@SpringJUnitConfig(TestConfig.class)
-@TestPropertySource(properties = {"spring.profiles.active=test"})
-@Transactional
+@IT
 public class LocationServiceTest {
 
     @Autowired
@@ -57,7 +53,7 @@ public class LocationServiceTest {
         assertAll(
                 () -> assertThrows(EntityExistsException.class, () -> locationService
                         .save(LOCATION_WEATHER_DTO.name(), LOCATION_WEATHER_DTO.latitude(), LOCATION_WEATHER_DTO.longitude(), existingUserId)),
-                () -> assertThrows(EntityNotFoundException.class, () -> locationService.save(any(), any(), any(), nonExistingUserId))
+                () -> assertThrows(EntityNotFoundException.class, () -> locationService.save("any()", BigDecimal.ONE, BigDecimal.ONE, nonExistingUserId))
         );
     }
 
@@ -73,6 +69,6 @@ public class LocationServiceTest {
     public void userDeletesOtherUserLocationCausingException(){
         Long userId = 2L;
         Long locationId = 1L;
-        Exception ex = assertThrows(UnauthorizedException.class, () -> locationService.delete(locationId, userId));
+        assertThrows(UnauthorizedException.class, () -> locationService.delete(locationId, userId));
     }
 }

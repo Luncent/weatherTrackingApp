@@ -18,7 +18,7 @@ public class LocationDTOConstants {
             .build();
 
     public final static UnsavedLocationDTO LOCATION_WEATHER_DTO = new UnsavedLocationDTO(
-            "London", valueOf(51.5073219), valueOf(-0.1276474));
+            "London", valueOf(51.5074219), valueOf(-0.1246474));
 
     public final static String CITY_NAME = "London";
 }

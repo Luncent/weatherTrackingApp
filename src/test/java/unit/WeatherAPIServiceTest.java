@@ -1,4 +1,4 @@
-package integration;
+package unit;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.example.dto.LocationWeatherDTO;
@@ -15,7 +15,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mockito;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
-
 
 import java.math.BigDecimal;
 import java.net.http.HttpClient;
@@ -63,7 +62,7 @@ public class WeatherAPIServiceTest {
         }
 
         @ParameterizedTest
-        @MethodSource("integration.WeatherAPIServiceTest#getArgumentsForCorrectResponseHandlingWhenResponseHasErrors")
+        @MethodSource("unit.WeatherAPIServiceTest#getArgumentsForCorrectResponseHandlingWhenResponseHasErrors")
         @DisplayName("correct exception message when handling error response")
         public void correctResponseErrorsHandling(String expectedErrorMessage, Integer statusCode) {
             HttpResponse<String> httpExpectedResponse = mock(HttpResponse.class);
@@ -100,7 +99,7 @@ public class WeatherAPIServiceTest {
         }
 
         @ParameterizedTest
-        @MethodSource("integration.WeatherAPIServiceTest#getArgumentsForCorrectResponseHandlingWhenResponseHasErrors")
+        @MethodSource("unit.WeatherAPIServiceTest#getArgumentsForCorrectResponseHandlingWhenResponseHasErrors")
         public void correctResponseErrorsHandling(String expectedErrorMessage, Integer statusCode) {
             HttpResponse<String> searchResponse = mock(HttpResponse.class);
             doReturn("dummy response message").when(searchResponse).body();
