@@ -3,6 +3,7 @@ package unit;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.example.dto.LocationWeatherDTO;
 import org.example.mappers.LocationMapper;
+import org.example.model.Coordinate;
 import org.example.services.WeatherAPIService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -56,7 +57,7 @@ public class WeatherAPIServiceTest {
             Mockito.doReturn(testFutureResponse).when(httpClient).sendAsync(any(), any());
 
 
-            LocationWeatherDTO resultDTO = weatherAPIService.getLocationWeatherByCoordinates(BigDecimal.ONE, BigDecimal.ONE);
+            LocationWeatherDTO resultDTO = weatherAPIService.getLocationWeatherByCoordinates(new Coordinate(BigDecimal.ONE, BigDecimal.ONE));
 
             assertThat(EXPECTED_WEATHER_DTO_FROM_JSON_FILE).isEqualTo(resultDTO);
         }
@@ -73,7 +74,7 @@ public class WeatherAPIServiceTest {
 
             Mockito.doReturn(testFutureResponse).when(httpClient).sendAsync(any(), any());
 
-            Exception exception = assertThrows(Exception.class, () -> weatherAPIService.getLocationWeatherByCoordinates(any(), any()));
+            Exception exception = assertThrows(Exception.class, () -> weatherAPIService.getLocationWeatherByCoordinates(new Coordinate(BigDecimal.ONE, BigDecimal.ONE)));
             String exceptionMassage = exception.getMessage();
             assertThat(exceptionMassage)
                     .as(exceptionMassage + " contains " + expectedErrorMessage)

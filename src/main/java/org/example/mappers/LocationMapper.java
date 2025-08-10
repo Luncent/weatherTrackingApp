@@ -43,16 +43,9 @@ public class LocationMapper {
         JsonNode sysNode = rootNode.get("sys");
         String countryCode = sysNode.get("country").asText();
 
-        return LocationWeatherDTO.builder()
-                .temperature(temperature)
-                .feelsLikeTemperature(feelsLikeTemperature)
-                .humidity(humidity)
-                .longitude(longitude)
-                .latitude(latitude)
-                .countryCode(countryCode)
-                .weatherDescription(weatherDescription)
-                .city(city)
-                .build();
+        return new LocationWeatherDTO(
+                temperature, feelsLikeTemperature, humidity ,longitude, latitude ,countryCode ,weatherDescription, city
+        );
     }
 
     public List<UnsavedLocationDTO> convertToLocationDTOList(String json) throws JsonProcessingException {

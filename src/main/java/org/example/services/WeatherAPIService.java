@@ -1,8 +1,10 @@
 package org.example.services;
 
+import lombok.extern.log4j.Log4j2;
 import org.example.dto.LocationWeatherDTO;
 import org.example.dto.UnsavedLocationDTO;
 import org.example.mappers.LocationMapper;
+import org.example.model.Coordinate;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -15,6 +17,7 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 @Service
+@Log4j2
 public class WeatherAPIService {
 
     private final String getLocationWeatherByCoordinatesRequestTemplate;
@@ -34,13 +37,14 @@ public class WeatherAPIService {
     /**
      * @throws Exception with message that describes weather api call error
      */
-    public LocationWeatherDTO getLocationWeatherByCoordinates(BigDecimal longitude, BigDecimal latitude) throws Exception {
+    public LocationWeatherDTO getLocationWeatherByCoordinates(Coordinate coordinate) throws Exception {
         HttpRequest getRequest = HttpRequest.newBuilder()
-                .uri(new URI(String.format(getLocationWeatherByCoordinatesRequestTemplate, latitude,longitude)))
+                .uri(new URI(String.format(getLocationWeatherByCoordinatesRequestTemplate, coordinate.getLatitude(),coordinate.getLongitude())))
                 .GET()
                 .version(HttpClient.Version.HTTP_1_1)
                 .build();
 
+        log.debug("sending request to weather api");
         CompletableFuture<HttpResponse<String>> futureResponse = httpClient.sendAsync(getRequest, HttpResponse.BodyHandlers.ofString());
         String jsonBody = getResponseBody(futureResponse.get());
         return locationMapper.convertToLocationWeatherDTO(jsonBody);

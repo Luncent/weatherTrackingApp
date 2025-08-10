@@ -35,6 +35,7 @@ public abstract class BaseRepository<T,K extends Serializable> implements CRUDRe
         return entity;
     }
 
+    @Transactional(readOnly=true)
     @Override
     public List<T> getAll() {
             return sessionFactory.getCurrentSession()
@@ -42,6 +43,7 @@ public abstract class BaseRepository<T,K extends Serializable> implements CRUDRe
                     .list();
     }
 
+    @Transactional(readOnly=true)
     @Override
     public Optional<T> getById(K id) {
         return Optional.ofNullable(

@@ -1,6 +1,7 @@
 package integration;
 
 import annotations.IT;
+import org.example.dto.LocationPageDTO;
 import org.example.entities.Location;
 import org.example.exceptions.EntityExistsException;
 import org.example.exceptions.EntityNotFoundException;
@@ -12,13 +13,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.math.BigDecimal;
 
+import static java.lang.Double.parseDouble;
+import static java.math.BigDecimal.valueOf;
+import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.junit.jupiter.api.Assertions.assertAll;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static test_constants.LocationDTOConstants.LOCATION_WEATHER_DTO;
 
 @IT
 public class LocationServiceTest {
+
+    private final static BigDecimal LATITUDE = valueOf(parseDouble("51.5073219"));
+    private final static BigDecimal LONGITUDE = valueOf(parseDouble("-0.1276474"));
 
     @Autowired
     LocationService locationService;
@@ -57,18 +63,21 @@ public class LocationServiceTest {
         );
     }
 
+/*    @Test
+    public void cacheLocationSuccess() throws Exception {
+        LocationPageDTO page = locationService.selectPaginated(1, 1L);
+        locationService.selectPaginated(1, 1L);
+    }*/
 
     @Test
     public void userDeletesHisOwnLocation() throws UnauthorizedException, EntityNotFoundException {
         Long userId = 1L;
-        Long locationId = 1L;
-        locationService.delete(locationId, userId);
+        assertDoesNotThrow(()->locationService.delete(LATITUDE, LONGITUDE, userId));
     }
 
     @Test
     public void userDeletesOtherUserLocationCausingException(){
         Long userId = 2L;
-        Long locationId = 1L;
-        assertThrows(UnauthorizedException.class, () -> locationService.delete(locationId, userId));
+        assertThrows(EntityNotFoundException.class, () -> locationService.delete(LATITUDE, LONGITUDE, userId));
     }
 }
