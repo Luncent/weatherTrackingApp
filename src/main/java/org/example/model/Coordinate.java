@@ -2,6 +2,7 @@ package org.example.model;
 
 import java.math.BigDecimal;
 
+//hi
 public final class Coordinate {
     private final BigDecimal latitude;
     private final BigDecimal longitude;
