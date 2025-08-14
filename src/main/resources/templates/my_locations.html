@@ -20,7 +20,7 @@
         <div class="d-flex align-items-center" th:if="${username != null}">
             <span class="navbar-text me-3" th:text="${username}">username</span>
             <form th:action="@{/sign_out}" method="post">
-                <button  class="btn btn-outline-danger" type="submit">Sign out</button>
+                <button class="btn btn-outline-danger" type="submit">Sign out</button>
             </form>
         </div>
         <div class="d-flex align-items-center" th:if="${username == null}">
@@ -44,25 +44,34 @@
         </form>
 
         <div th:if="user">
-            
+            <div th:each="location : ${myLocations.locationWeatherDTOList()}">
+                <p th:text="${location}"></p>
+            </div>
             <div class="row">
-                <div class="col-12 col-lg-3 col-md-6 mb-4">
-                    <div class="card h-100 position-relative weather-card">
-                        <div class="position-absolute weather-card-delete-form">
-                            <button class="btn-close" aria-label="Delete"></button>
-                        </div>
-                        <img class="card-img-top img-fluid"
-                             th:src="@{/static/css/saved_locations_files/weather_default_logo.png}" alt="Weather icon">
-                        <div class="card-body d-flex flex-column">
-                            <h1 class="card-text">7°C</h1>
-                            <h3 class="card-title">Tbilisi, GE</h3>
-                            <p class="card-text mb-1">Feels like <span>2</span>°C.
-                                <span>Clear sky</span>
-                            </p>
-                            <p class="card-text mb-1">Humidity: 70%</p>
+
+                    <div th:each="location : ${myLocations.locationWeatherDTOList()}" class="col-12 col-lg-3 col-md-6 mb-4">
+
+                        <div class="card h-100 position-relative weather-card">
+                            <div class="position-absolute weather-card-delete-form">
+                                <button class="btn-close" aria-label="Delete"></button>
+                            </div>
+                            <img class="card-img-top img-fluid"
+                                 th:src="@{'/static/images/'+${location.weatherIcon()}+'.png'}" alt="Weather icon">
+                            <div class="card-body d-flex flex-column">
+                                <h1 class="card-text" th:text="${location.temperature()}+'°C'">7°C</h1>
+                                <h3 class="card-title" th:text="${location.city()} + ', ' + ${location.countryCode()} ">
+                                    Tbilisi, GE</h3>
+                                <h2 class="card-title"
+                                    th:text="'lat: '+${location.latitude()} + ', lon: ' + ${location.longitude()} "></h2>
+                                <p class="card-text mb-1">Feels like <span
+                                        th:text="${location.feelsLikeTemperature()}">2</span>°C.
+                                    <span th:text="${location.weatherDescription()}">Clear sky</span>
+                                </p>
+                                <p class="card-text mb-1" th:text="'Humidity: '+${location.humidity()}+'%'">Humidity:
+                                    70%</p>
+                            </div>
                         </div>
                     </div>
-                </div>
 
             </div>
 

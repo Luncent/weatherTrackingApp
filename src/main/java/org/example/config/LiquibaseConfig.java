@@ -10,7 +10,7 @@ import org.springframework.core.env.Environment;
 import javax.sql.DataSource;
 import java.util.Objects;
 
-@Profile("prod")
+@Profile("proddd")
 @Configuration
 public class LiquibaseConfig {
     private final DataSource dataSource;

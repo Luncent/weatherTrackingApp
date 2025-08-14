@@ -46,12 +46,23 @@ public class LocationsController {
                 "Zhodino",
                 "13n"
         );
-        return new LocationPageDTO(of(locationWeatherDTO), currentPage, 10);
+        LocationWeatherDTO locationWeatherDTO2 = new LocationWeatherDTO(
+                BigDecimal.ONE,
+                BigDecimal.ONE,
+                2,
+                BigDecimal.ONE,
+                BigDecimal.ONE,
+                "BY",
+                "few clouds",
+                "Zhodino",
+                "02d"
+        );
+        return new LocationPageDTO(of(locationWeatherDTO,locationWeatherDTO2), currentPage, 10);
     }
 
 
     @GetMapping
-    public String myLocations(@RequestParam(required = false) Integer currentPage,
+    public String myLocations(@RequestParam(required = false, name = "currentPage") Integer currentPage,
                               Model model, HttpServletRequest request) {
         String username = null;
         try {
@@ -60,7 +71,10 @@ public class LocationsController {
         }catch (NoAvailableSessionException e) {
             return "my_locations";
         }
-        model.addAttribute("myLocations", mockLocationPageDTO(currentPage==null?1:currentPage));
+
+        LocationPageDTO page = mockLocationPageDTO(currentPage==null?1:currentPage);
+        System.out.println(page.locationWeatherDTOList().size());
+        model.addAttribute("myLocations", page);
         model.addAttribute("username", username);
         return "my_locations";
     }

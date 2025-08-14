@@ -99,7 +99,7 @@ public class LocationService {
             }
             locationWeatherDTOS.add(dto);
         }
-        Long lastPageNumber = locationRepository.getPageCount(userID);
+        Integer lastPageNumber = locationRepository.getPageCount(userID);
         return new LocationPageDTO(locationWeatherDTOS, pageNumber, lastPageNumber);
     }
 

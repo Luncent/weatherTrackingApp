@@ -43,9 +43,9 @@ public class LocationRepository extends BaseRepository<Location, Long> {
                 .list();
     }
 
-    public Long getPageCount(Long userId) {
+    public Integer getPageCount(Long userId) {
         Session session = sessionFactory.getCurrentSession();
-        Long locationNumber = session.createQuery("SELECT COUNT(*) from Location l WHERE l.user.id = :userId", Long.class)
+        Integer locationNumber = session.createQuery("SELECT COUNT(*) from Location l WHERE l.user.id = :userId", Integer.class)
                 .setParameter("userId", userId)
                 .getSingleResult();
         return (locationNumber % PAGE_SIZE) != 0 ? locationNumber / PAGE_SIZE + 1 : locationNumber / PAGE_SIZE;
