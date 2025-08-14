@@ -24,7 +24,6 @@ public class RegistrationServiceTest {
 
     @Autowired
     private RegistrationService registrationService;
-
     @Autowired
     private PasswordEncodingService passwordEncodingService;
     @Autowired

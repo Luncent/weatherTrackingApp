@@ -11,10 +11,12 @@
         http://www.liquibase.org/xml/ns/pro
         http://www.liquibase.org/xml/ns/pro/liquibase-pro-latest.xsd">
 
-    <include file="db.changelog/v1/v1-create-user-table-changelog.xml"/>
-    <include file="db.changelog/v1/v1-create-locations-sessions-tables-changelog.xml"/>
-    <include file="db.changelog/v1/v1-locations-users- add-autoincrement-keys.xml"/>
-    <include file="db.changelog/v1/test-data/v1-tests-data-changelog.xml"/>
-    <include file="db.changelog/v1/v1-fix-locations-unique-index.xml"/>
+    <changeSet id="v1-4" author="dima (generated)">
+        <dropUniqueConstraint tableName="locations" constraintName="locations_name_latitude_longitude_key"/>
+        <addUniqueConstraint
+                tableName="locations" columnNames="latitude, longitude"
+        />
+    </changeSet>
+
 
 </databaseChangeLog>

@@ -3,6 +3,7 @@ package org.example.mappers;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
 import org.example.dto.LocationWeatherDTO;
@@ -31,9 +32,12 @@ public class LocationMapper {
         BigDecimal latitude = coordNode.get("lat").decimalValue();
 
         JsonNode weatherNodes = rootNode.get("weather");
-        String weatherDescription = StreamSupport.stream(weatherNodes.spliterator(), false)
-                .map(weatherNode->weatherNode.get("description").asText())
-                .collect(Collectors.joining(","));
+        JsonNode firstWeather = StreamSupport.stream(weatherNodes.spliterator(),false)
+                .findFirst()
+                .orElseThrow(()->new EntityNotFoundException("weather description not found"));
+        String weatherDescription = firstWeather.get("description").asText();
+                //.collect(Collectors.joining(","));
+        String weatherIcon = firstWeather.get("icon").asText();
 
         JsonNode mainNode = rootNode.get("main");
         BigDecimal temperature = mainNode.get("temp").decimalValue();
@@ -43,16 +47,9 @@ public class LocationMapper {
         JsonNode sysNode = rootNode.get("sys");
         String countryCode = sysNode.get("country").asText();
 
-        return LocationWeatherDTO.builder()
-                .temperature(temperature)
-                .feelsLikeTemperature(feelsLikeTemperature)
-                .humidity(humidity)
-                .longitude(longitude)
-                .latitude(latitude)
-                .countryCode(countryCode)
-                .weatherDescription(weatherDescription)
-                .city(city)
-                .build();
+        return new LocationWeatherDTO(
+                temperature, feelsLikeTemperature, humidity ,longitude, latitude ,countryCode ,weatherDescription, city, weatherIcon
+        );
     }
 
     public List<UnsavedLocationDTO> convertToLocationDTOList(String json) throws JsonProcessingException {

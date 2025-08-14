@@ -31,7 +31,7 @@
 
         <addUniqueConstraint
                 tableName="locations" columnNames="name, latitude, longitude"
-        />
+        /><!-- just latitude and longitude should be -->
 
         <createTable tableName="sessions">
             <column name="id" type="uuid">
