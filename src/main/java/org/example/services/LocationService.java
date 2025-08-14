@@ -98,7 +98,6 @@ public class LocationService {
                 log.debug(" location with coordinates {} found in cache", coordinate);
             }
             locationWeatherDTOS.add(dto);
-
         }
         Long lastPageNumber = locationRepository.getPageCount(userID);
         return new LocationPageDTO(locationWeatherDTOS, pageNumber, lastPageNumber);

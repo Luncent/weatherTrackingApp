@@ -4,6 +4,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.example.controllers.cookies.CookieHandler;
+import org.example.dto.LocationPageDTO;
+import org.example.dto.LocationWeatherDTO;
 import org.example.dto.requests_dtos.LocationSaveDTO;
 import org.example.exceptions.NoAvailableSessionException;
 import org.example.services.LocationService;
@@ -19,6 +21,7 @@ import java.util.List;
 import java.util.UUID;
 
 import static java.util.Arrays.asList;
+import static java.util.List.of;
 
 @Controller
 @RequestMapping("/")
@@ -30,8 +33,26 @@ public class LocationsController {
     private final SessionService sessionService;
     private final LocationService locationService;
 
+
+    private LocationPageDTO mockLocationPageDTO(Integer currentPage){
+        LocationWeatherDTO locationWeatherDTO = new LocationWeatherDTO(
+                BigDecimal.ONE,
+                BigDecimal.ONE,
+                2,
+                BigDecimal.ONE,
+                BigDecimal.ONE,
+                "BY",
+                "snow",
+                "Zhodino",
+                "13n"
+        );
+        return new LocationPageDTO(of(locationWeatherDTO), currentPage, 10);
+    }
+
+
     @GetMapping
-    public String myLocations(Model model, HttpServletRequest request) {
+    public String myLocations(@RequestParam(required = false) Integer currentPage,
+                              Model model, HttpServletRequest request) {
         String username = null;
         try {
             UUID sessionId = cookieHandler.getSessionCookie(request);
@@ -39,6 +60,7 @@ public class LocationsController {
         }catch (NoAvailableSessionException e) {
             return "my_locations";
         }
+        model.addAttribute("myLocations", mockLocationPageDTO(currentPage==null?1:currentPage));
         model.addAttribute("username", username);
         return "my_locations";
     }
