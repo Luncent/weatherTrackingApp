@@ -6,6 +6,7 @@ import lombok.extern.log4j.Log4j2;
 import org.example.controllers.cookies.CookieHandler;
 import org.example.dto.requests_dtos.LocationSaveDTO;
 import org.example.exceptions.NoAvailableSessionException;
+import org.example.services.LocationService;
 import org.example.services.SessionService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -27,6 +28,7 @@ public class LocationsController {
 
     private final CookieHandler cookieHandler;
     private final SessionService sessionService;
+    private final LocationService locationService;
 
     @GetMapping
     public String myLocations(Model model, HttpServletRequest request) {
