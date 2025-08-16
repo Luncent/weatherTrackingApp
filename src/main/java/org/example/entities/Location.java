@@ -29,9 +29,4 @@ public class Location {
     @JoinColumn(name = "user_id")
     private User user;
 
-
-    public void setUser(User user){
-        user.getLocations().add(this);
-        this.user = user;
-    }
 }

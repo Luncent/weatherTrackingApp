@@ -1,10 +1,9 @@
 package org.example;
 
-import jakarta.servlet.ServletContext;
-import jakarta.servlet.ServletException;
+import jakarta.servlet.*;
 import org.example.config.AppConfig;
-import org.example.config.SpringMVCConfig;
 import org.springframework.web.servlet.support.AbstractAnnotationConfigDispatcherServletInitializer;
+
 
 public class AnnotationConfigDispatcherServletInitializer extends AbstractAnnotationConfigDispatcherServletInitializer {
 

@@ -22,7 +22,7 @@ public class LocationMapper {
     private final ObjectMapper objectMapper;
 
 
-    public LocationWeatherDTO convertToLocationWeatherDTO(String jsonString) throws JsonProcessingException {
+    public LocationWeatherDTO convertToLocationWeatherDTO(String jsonString, Long locationId) throws JsonProcessingException {
         JsonNode rootNode = objectMapper.readTree(jsonString);
 
         String city = rootNode.get("name").asText();
@@ -48,7 +48,7 @@ public class LocationMapper {
         String countryCode = sysNode.get("country").asText();
 
         return new LocationWeatherDTO(
-                temperature, feelsLikeTemperature, humidity ,longitude, latitude ,countryCode ,weatherDescription, city, weatherIcon
+                locationId, temperature, feelsLikeTemperature, humidity ,longitude, latitude ,countryCode ,weatherDescription, city, weatherIcon
         );
     }
 

@@ -57,7 +57,8 @@ public class WeatherAPIServiceTest {
             Mockito.doReturn(testFutureResponse).when(httpClient).sendAsync(any(), any());
 
 
-            LocationWeatherDTO resultDTO = weatherAPIService.getLocationWeatherByCoordinates(new Coordinate(BigDecimal.ONE, BigDecimal.ONE));
+            LocationWeatherDTO resultDTO = weatherAPIService
+                    .getLocationWeatherByCoordinates(new Coordinate(BigDecimal.ONE, BigDecimal.ONE), 1L);
 
             assertThat(EXPECTED_WEATHER_DTO_FROM_JSON_FILE).isEqualTo(resultDTO);
         }
@@ -74,7 +75,8 @@ public class WeatherAPIServiceTest {
 
             Mockito.doReturn(testFutureResponse).when(httpClient).sendAsync(any(), any());
 
-            Exception exception = assertThrows(Exception.class, () -> weatherAPIService.getLocationWeatherByCoordinates(new Coordinate(BigDecimal.ONE, BigDecimal.ONE)));
+            Exception exception = assertThrows(Exception.class, () -> weatherAPIService
+                    .getLocationWeatherByCoordinates(new Coordinate(BigDecimal.ONE, BigDecimal.ONE), 1L));
             String exceptionMassage = exception.getMessage();
             assertThat(exceptionMassage)
                     .as(exceptionMassage + " contains " + expectedErrorMessage)

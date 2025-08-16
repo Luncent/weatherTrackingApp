@@ -4,6 +4,6 @@ import java.util.List;
 
 public record LocationPageDTO (
         List<LocationWeatherDTO> locationWeatherDTOList,
-        int currentPage,
-        int overallPages
+        Integer currentPage,
+        Long overallPages
 ){}

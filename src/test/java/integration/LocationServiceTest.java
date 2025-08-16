@@ -1,7 +1,6 @@
 package integration;
 
 import annotations.IT;
-import org.example.dto.LocationPageDTO;
 import org.example.entities.Location;
 import org.example.exceptions.EntityExistsException;
 import org.example.exceptions.EntityNotFoundException;
@@ -15,7 +14,6 @@ import java.math.BigDecimal;
 
 import static java.lang.Double.parseDouble;
 import static java.math.BigDecimal.valueOf;
-import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static test_constants.LocationDTOConstants.LOCATION_WEATHER_DTO;
@@ -25,6 +23,7 @@ public class LocationServiceTest {
 
     private final static BigDecimal LATITUDE = valueOf(parseDouble("51.5073219"));
     private final static BigDecimal LONGITUDE = valueOf(parseDouble("-0.1276474"));
+    private final static Long EXISTING_LOCATION_ID_USER_1 = 1L;
 
     @Autowired
     LocationService locationService;
@@ -72,12 +71,12 @@ public class LocationServiceTest {
     @Test
     public void userDeletesHisOwnLocation() throws UnauthorizedException, EntityNotFoundException {
         Long userId = 1L;
-        assertDoesNotThrow(()->locationService.delete(LATITUDE, LONGITUDE, userId));
+        assertDoesNotThrow(()->locationService.delete(EXISTING_LOCATION_ID_USER_1, userId));
     }
 
     @Test
     public void userDeletesOtherUserLocationCausingException(){
         Long userId = 2L;
-        assertThrows(EntityNotFoundException.class, () -> locationService.delete(LATITUDE, LONGITUDE, userId));
+        assertThrows(EntityNotFoundException.class, () -> locationService.delete(EXISTING_LOCATION_ID_USER_1, userId));
     }
 }

@@ -34,7 +34,7 @@ public class LocationMapperTest {
     @DisplayName("Location weather JSON data convertion to obj")
     public void jsonResponseConversionToSavedDTOCorrect() throws IOException {
         String jsonLocationWeather = getJsonFromFile("location_weather_data.json");
-        LocationWeatherDTO concerted = locationMapper.convertToLocationWeatherDTO(jsonLocationWeather);
+        LocationWeatherDTO concerted = locationMapper.convertToLocationWeatherDTO(jsonLocationWeather, 1L);
         assertThat(concerted).isEqualTo(EXPECTED_WEATHER_DTO_FROM_JSON_FILE);
     }
 

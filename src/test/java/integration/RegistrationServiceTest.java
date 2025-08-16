@@ -37,7 +37,7 @@ public class RegistrationServiceTest {
         //register new user
         UUID sessionId = registrationService.register(ANDREW.getLogin(), ANDREW.getPassword(), ANDREW.getRepeatedPassword());
         SECONDS.sleep(sessionTimeSec-1);
-        HttpSession session = sessionService.findById(sessionId);
+        HttpSession session = sessionService.findByIdAndCheckActive(sessionId);
         assertTrue(sessionService.isSessionActive(session));
     }
 

@@ -23,15 +23,13 @@ public class LocationRepository extends BaseRepository<Location, Long> {
         super(factory, Location.class);
     }
 
-    public Optional<Location> getByCoordinatesAndUserId(BigDecimal latitude, BigDecimal longitude, Long userId) {
-        Session session = sessionFactory.getCurrentSession();
-        return session.createQuery("SELECT l FROM Location l " +
-                        "WHERE l.latitude = :latitude AND l.longitude = :longitude AND l.user.id = :userId",
-                        Location.class)
-                .setParameter("latitude", latitude)
-                .setParameter("longitude", longitude)
+    public Integer deleteUserLocation(Long locationId, Long userId){
+        Session session  = sessionFactory.getCurrentSession();
+        return session.createQuery("DELETE FROM Location l " +
+                "WHERE l.id = :locationId AND l.user.id = :userId")
+                .setParameter("locationId", locationId)
                 .setParameter("userId", userId)
-                .uniqueResultOptional();
+                .executeUpdate();
     }
 
     public List<Location> getPage(int pageNumber, Long userId) {
@@ -43,11 +41,13 @@ public class LocationRepository extends BaseRepository<Location, Long> {
                 .list();
     }
 
-    public Integer getPageCount(Long userId) {
+    public Long getPageCount(Long userId) {
         Session session = sessionFactory.getCurrentSession();
-        Integer locationNumber = session.createQuery("SELECT COUNT(*) from Location l WHERE l.user.id = :userId", Integer.class)
+        Long locationNumber = session.createQuery("SELECT COUNT(*) from Location l WHERE l.user.id = :userId", Long.class)
                 .setParameter("userId", userId)
                 .getSingleResult();
-        return (locationNumber % PAGE_SIZE) != 0 ? locationNumber / PAGE_SIZE + 1 : locationNumber / PAGE_SIZE;
+        Long allPagesCount = (locationNumber % PAGE_SIZE) != 0 ? locationNumber / PAGE_SIZE + 1 : locationNumber / PAGE_SIZE;
+        allPagesCount = allPagesCount == 0 ? 1 : allPagesCount;
+        return allPagesCount;
     }
 }

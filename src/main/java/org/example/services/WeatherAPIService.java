@@ -28,7 +28,7 @@ public class WeatherAPIService {
     public WeatherAPIService(final LocationMapper locationMapper, final HttpClient httpClient,
                              @Value("${weather_api_key}") String apiKey) {
         this.getLocationsByCityNameRequestTemplate = "http://api.openweathermap.org/geo/1.0/direct?q=%s&limit=5&appid=" + apiKey;
-        this.getLocationWeatherByCoordinatesRequestTemplate = "https://api.openweathermap.org/data/2.5/weather?lat=%s&lon=%s&appid=" + apiKey;
+        this.getLocationWeatherByCoordinatesRequestTemplate = "https://api.openweathermap.org/data/2.5/weather?lat=%s&lon=%s&units=metric&appid=" + apiKey;
         this.locationMapper = locationMapper;
         this.httpClient = httpClient;
     }
@@ -37,7 +37,7 @@ public class WeatherAPIService {
     /**
      * @throws Exception with message that describes weather api call error
      */
-    public LocationWeatherDTO getLocationWeatherByCoordinates(Coordinate coordinate) throws Exception {
+    public LocationWeatherDTO getLocationWeatherByCoordinates(Coordinate coordinate, Long locationId) throws Exception {
         HttpRequest getRequest = HttpRequest.newBuilder()
                 .uri(new URI(String.format(getLocationWeatherByCoordinatesRequestTemplate, coordinate.getLatitude(),coordinate.getLongitude())))
                 .GET()
@@ -47,7 +47,7 @@ public class WeatherAPIService {
         log.debug("sending request to weather api");
         CompletableFuture<HttpResponse<String>> futureResponse = httpClient.sendAsync(getRequest, HttpResponse.BodyHandlers.ofString());
         String jsonBody = getResponseBody(futureResponse.get());
-        return locationMapper.convertToLocationWeatherDTO(jsonBody);
+        return locationMapper.convertToLocationWeatherDTO(jsonBody, locationId);
     }
 
 
@@ -58,6 +58,7 @@ public class WeatherAPIService {
                 .version(HttpClient.Version.HTTP_1_1)
                 .build();
         CompletableFuture<HttpResponse<String>> responseFuture = httpClient.sendAsync(getLocationsByNameReq, HttpResponse.BodyHandlers.ofString());
+        log.debug("sending search request to weather api");
         return locationMapper.convertToLocationDTOList(getResponseBody(responseFuture.get()));
     }
 

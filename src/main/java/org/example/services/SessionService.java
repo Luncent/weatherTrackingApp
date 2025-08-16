@@ -28,7 +28,7 @@ public class SessionService {
     }
 
 
-    public HttpSession findById(UUID id) throws NoAvailableSessionException {
+    public HttpSession findByIdAndCheckActive(UUID id) throws NoAvailableSessionException {
         Optional<HttpSession> sessionOpt = httpSessionRepository.getById(id);
         if (sessionOpt.isEmpty() || !isSessionActive(sessionOpt.get())) {
             throw new NoAvailableSessionException();

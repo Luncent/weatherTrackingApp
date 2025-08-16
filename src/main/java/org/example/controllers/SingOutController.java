@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import java.util.UUID;
 
 @Controller
-@RequestMapping("/sign_out")
+@RequestMapping("app/sign_out")
 @AllArgsConstructor
 @Log4j2
 public class SingOutController {
@@ -35,6 +35,6 @@ public class SingOutController {
         catch (Exception ex){
             log.error(ex.getMessage());
         }
-        return "redirect:/login";
+        return "redirect:/app/login";
     }
 }

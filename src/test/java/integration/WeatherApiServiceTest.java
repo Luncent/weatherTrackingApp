@@ -26,7 +26,8 @@ public class WeatherApiServiceTest {
         Coordinate coordinate = new Coordinate(valueOf(Double.parseDouble(LONGITUDE)),
                 valueOf(Double.parseDouble(LATITUDE)));
         LocationWeatherDTO dto = weatherAPIService.getLocationWeatherByCoordinates(
-                coordinate
+                coordinate,
+                1L
         );
         System.out.println(dto);
     }

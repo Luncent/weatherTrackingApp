@@ -1,5 +1,6 @@
 package org.example.controllers;
 
+import jakarta.servlet.ServletContext;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -27,7 +28,7 @@ import static java.util.List.of;
 import static org.example.utils.ControllersUtil.getErrorsMessages;
 
 @Controller
-@RequestMapping("/login")
+@RequestMapping("app/login")
 @AllArgsConstructor
 @Log4j2
 public class LoginController {
@@ -46,7 +47,7 @@ public class LoginController {
         if(validationResult.hasErrors()){
             redirectAttributes.addFlashAttribute("errors", getErrorsMessages(validationResult));
             log.debug("validation errors {}", getErrorsMessages(validationResult));
-            return "redirect:/login";
+            return "redirect:/app/login";
         }
         try {
             UUID sessionId = loginService.login(loginDTO.getLogin(), loginDTO.getPassword());
@@ -55,10 +56,10 @@ public class LoginController {
         catch (EntityNotFoundException ex){
             log.debug("wrong login or password");
             //TODO character encoding does not support russian now
-            redirectAttributes.addFlashAttribute("errors", of("Неправильный логин или пароль"));
-            return "redirect:/login";
+            redirectAttributes.addFlashAttribute("errors", of("Неверный логин или пароль"));
+            return "redirect:/app/login";
         }
-        return "redirect:/";
+        return "redirect:/app";
     }
 
 }

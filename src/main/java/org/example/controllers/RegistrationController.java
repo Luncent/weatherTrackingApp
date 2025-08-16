@@ -20,7 +20,7 @@ import java.util.UUID;
 import static org.example.utils.ControllersUtil.getErrorsMessages;
 
 @Controller
-@RequestMapping("/registration")
+@RequestMapping("app/registration")
 @AllArgsConstructor
 @Log4j2
 public class RegistrationController {
@@ -39,22 +39,22 @@ public class RegistrationController {
         if(validationResult.hasErrors()){
             log.debug(getErrorsMessages(validationResult));
             redirectAttributes.addFlashAttribute("errors", getErrorsMessages(validationResult));
-            return "redirect:/registration";
+            return "redirect:/app/registration";
         }
         try {
             UUID sessionId = registrationService
                     .register(newUser.getLogin(), newUser.getPassword(), newUser.getPasswordConfirm());
             cookieHandler.setSessionCookie(response, sessionId);
-            return "redirect:/";
+            return "redirect:/app/";
         } catch (EntityExistsException e) {
             log.debug("user {} already exists", newUser.getLogin());
             redirectAttributes.addFlashAttribute("errors", "user "+newUser.getLogin()+" already exists");
-            return "redirect:/registration";
+            return "redirect:/app/registration";
         }
         catch (Exception ex){
             log.debug("unexpected error");
             redirectAttributes.addFlashAttribute("errors", "unexpected error");
-            return "redirect:/registration";
+            return "redirect:/app/registration";
         }
     }
 }

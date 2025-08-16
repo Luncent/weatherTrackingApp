@@ -34,7 +34,7 @@ public class LoginServiceTest {
         SECONDS.sleep(1);
         UUID sessionId = loginService.login(ANDREW.getLogin(), ANDREW.getPassword());
         SECONDS.sleep(sessionTimeSec - 1);
-        HttpSession session =sessionService.findById(sessionId);
+        HttpSession session =sessionService.findByIdAndCheckActive(sessionId);
         assertTrue(sessionService.isSessionActive(session));
     }
 
