@@ -5,6 +5,7 @@ import org.example.entities.Location;
 import org.example.exceptions.EntityExistsException;
 import org.example.exceptions.EntityNotFoundException;
 import org.example.exceptions.UnauthorizedException;
+import org.example.model.Coordinate;
 import org.example.services.LocationService;
 import org.hibernate.SessionFactory;
 import org.junit.jupiter.api.Test;
@@ -23,6 +24,7 @@ public class LocationServiceTest {
 
     private final static BigDecimal LATITUDE = valueOf(parseDouble("51.5073219"));
     private final static BigDecimal LONGITUDE = valueOf(parseDouble("-0.1276474"));
+    private final static Coordinate COORDINATE = new Coordinate(LATITUDE, LONGITUDE);
     private final static Long EXISTING_LOCATION_ID_USER_1 = 1L;
 
     @Autowired
@@ -71,12 +73,12 @@ public class LocationServiceTest {
     @Test
     public void userDeletesHisOwnLocation() throws UnauthorizedException, EntityNotFoundException {
         Long userId = 1L;
-        assertDoesNotThrow(()->locationService.delete(EXISTING_LOCATION_ID_USER_1, userId));
+        assertDoesNotThrow(()->locationService.delete(COORDINATE, userId));
     }
 
     @Test
     public void userDeletesOtherUserLocationCausingException(){
         Long userId = 2L;
-        assertThrows(EntityNotFoundException.class, () -> locationService.delete(EXISTING_LOCATION_ID_USER_1, userId));
+        assertThrows(EntityNotFoundException.class, () -> locationService.delete(COORDINATE, userId));
     }
 }

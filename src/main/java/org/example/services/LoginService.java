@@ -25,7 +25,7 @@ public class LoginService {
     public UUID login(String login, String password) throws EntityNotFoundException {
         User user = userService.findByLogin(login);
         if(!passwordEncodingService.isSamePassword(password, user.getPassword())) {
-            throw new EntityNotFoundException();
+            throw new EntityNotFoundException("user name or password is incorrect");
         }
         HttpSession session = sessionService.openSessionForUser(user);
         return session.getId();

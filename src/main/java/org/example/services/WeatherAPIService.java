@@ -7,6 +7,7 @@ import org.example.mappers.LocationMapper;
 import org.example.model.Coordinate;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 import java.math.BigDecimal;
 import java.net.URI;
@@ -19,7 +20,6 @@ import java.util.concurrent.CompletableFuture;
 @Service
 @Log4j2
 public class WeatherAPIService {
-
     private final String getLocationWeatherByCoordinatesRequestTemplate;
     private final String getLocationsByCityNameRequestTemplate;
     private final LocationMapper locationMapper;
@@ -39,11 +39,10 @@ public class WeatherAPIService {
      */
     public LocationWeatherDTO getLocationWeatherByCoordinates(Coordinate coordinate, Long locationId) throws Exception {
         HttpRequest getRequest = HttpRequest.newBuilder()
-                .uri(new URI(String.format(getLocationWeatherByCoordinatesRequestTemplate, coordinate.getLatitude(),coordinate.getLongitude())))
+                .uri(new URI(String.format(getLocationWeatherByCoordinatesRequestTemplate, coordinate.getLatitude(), coordinate.getLongitude())))
                 .GET()
                 .version(HttpClient.Version.HTTP_1_1)
                 .build();
-
         log.debug("sending request to weather api");
         CompletableFuture<HttpResponse<String>> futureResponse = httpClient.sendAsync(getRequest, HttpResponse.BodyHandlers.ofString());
         String jsonBody = getResponseBody(futureResponse.get());
@@ -64,27 +63,26 @@ public class WeatherAPIService {
 
     private String getResponseBody(HttpResponse<String> response) throws Exception {
         int statusCode = response.statusCode();
-        if(is2xx(statusCode)) {
+        if (is2xx(statusCode)) {
             return response.body();
         }
-        if(is4xx(statusCode)) {
-            throw new Exception("Ошибка клиента: "+response.body());
+        if (is4xx(statusCode)) {
+            throw new Exception("Ошибка клиента: " + response.body());
         }
-        if(is5xx(statusCode)) {
-            throw new Exception("Ошибка сервера: "+response.body());
-        }
-        else throw new Exception("Необрабатываемый статус код: "+statusCode);
+        if (is5xx(statusCode)) {
+            throw new Exception("Ошибка сервера: " + response.body());
+        } else throw new Exception("Необрабатываемый статус код: " + statusCode);
     }
 
-    private  boolean is2xx(int statusCode) {
+    private boolean is2xx(int statusCode) {
         return statusCode >= 200 && statusCode < 300;
     }
 
-    private  boolean is4xx(int statusCode) {
+    private boolean is4xx(int statusCode) {
         return statusCode >= 400 && statusCode < 500;
     }
 
-    private  boolean is5xx(int statusCode) {
+    private boolean is5xx(int statusCode) {
         return statusCode >= 500 && statusCode < 600;
     }
 }

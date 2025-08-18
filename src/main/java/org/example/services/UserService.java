@@ -32,7 +32,7 @@ public class UserService {
     public User findByLogin(String login) throws EntityNotFoundException {
         Optional<User> userOptional = userRepository.findByLogin(login);
         if (userOptional.isEmpty()) {
-            throw new EntityNotFoundException();
+            throw new EntityNotFoundException("user not found");
         }
         return userOptional.get();
     }
@@ -40,7 +40,7 @@ public class UserService {
     public User findById(Long id) throws EntityNotFoundException {
         Optional<User> userOptional = userRepository.getById(id);
         if (userOptional.isEmpty()) {
-            throw new EntityNotFoundException();
+            throw new EntityNotFoundException("user not found");
         }
         return userOptional.get();
     }

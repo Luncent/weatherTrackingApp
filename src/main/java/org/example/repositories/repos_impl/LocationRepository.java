@@ -23,11 +23,14 @@ public class LocationRepository extends BaseRepository<Location, Long> {
         super(factory, Location.class);
     }
 
-    public Integer deleteUserLocation(Long locationId, Long userId){
-        Session session  = sessionFactory.getCurrentSession();
+    public Integer deleteUserLocation(BigDecimal latitude, BigDecimal longitude, Long userId) {
+        Session session = sessionFactory.getCurrentSession();
         return session.createQuery("DELETE FROM Location l " +
-                "WHERE l.id = :locationId AND l.user.id = :userId")
-                .setParameter("locationId", locationId)
+                        "WHERE l.latitude = :latitude" +
+                        " AND l.longitude = :longitude" +
+                        " AND l.user.id = :userId")
+                .setParameter("latitude", latitude)
+                .setParameter("longitude", longitude)
                 .setParameter("userId", userId)
                 .executeUpdate();
     }

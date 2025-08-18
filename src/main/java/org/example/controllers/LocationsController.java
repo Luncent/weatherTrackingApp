@@ -11,6 +11,7 @@ import org.example.entities.User;
 import org.example.exceptions.EntityExistsException;
 import org.example.exceptions.EntityNotFoundException;
 import org.example.exceptions.NoAvailableSessionException;
+import org.example.model.Coordinate;
 import org.example.services.LocationService;
 import org.example.services.SessionService;
 import org.example.services.WeatherAPIService;
@@ -116,14 +117,14 @@ public class LocationsController {
         return "redirect:/app/locations/search?city="+searchVal;
     }
 
-    @PostMapping("/locations/delete/{id}")
-    public String delete(@PathVariable("id") Long id,
+    @PostMapping("/locations/delete")
+    public String delete(Coordinate coordinate,
                          @RequestParam("currentPage") Integer currentPage,
                          HttpServletRequest request) throws EntityNotFoundException {
         try {
             UUID sessionId = cookieHandler.getSessionCookie(request);
             User user = sessionService.findByIdAndCheckActive(sessionId).getUser();
-            locationService.delete(id, user.getId());
+            locationService.delete(coordinate, user.getId());
         }catch (NoAvailableSessionException e) {
             log.debug("{} session not found", request.getRequestURI());
         }

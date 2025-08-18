@@ -55,7 +55,6 @@ public class LoginController {
         }
         catch (EntityNotFoundException ex){
             log.debug("wrong login or password");
-            //TODO character encoding does not support russian now
             redirectAttributes.addFlashAttribute("errors", of("Неверный логин или пароль"));
             return "redirect:/app/login";
         }

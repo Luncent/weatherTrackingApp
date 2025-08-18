@@ -40,7 +40,8 @@ public class LocationService {
      */
     //TODO dont need to send request for user, use EntityManager.getReferrense();
     @Transactional(rollbackFor = EntityExistsException.class)
-    public Location save(String cityName, BigDecimal latitude, BigDecimal longitude, Long userId) throws EntityNotFoundException, EntityExistsException {
+    public Location save(String cityName, BigDecimal latitude, BigDecimal longitude,
+                         Long userId) throws EntityNotFoundException, EntityExistsException {
         //User user = userService.findById(userId);
         log.debug("Saving location started");
         User user = sessionFactory.getCurrentSession().getReference(User.class, userId);
@@ -63,7 +64,7 @@ public class LocationService {
         Optional<Location> locationOptional = locationRepository.getById(id);
         if (locationOptional.isEmpty()) {
             log.debug("could not found location with such id {}", id);
-            throw new EntityNotFoundException();
+            throw new EntityNotFoundException("could not found location");
         }
         return locationOptional.get();
     }
@@ -74,15 +75,16 @@ public class LocationService {
     //TODO and try to delete it again we will use id=1 from cache.
     //TODO Clearing cache is not an option as we loose caching for a group of users
     @Transactional
-    public void delete(Long locationId, Long userId) throws EntityNotFoundException{
-        Integer rowsDeleted = locationRepository.deleteUserLocation(locationId, userId);
+    public void delete(Coordinate coordinate, Long userId) throws EntityNotFoundException{
+        Integer rowsDeleted = locationRepository.deleteUserLocation(coordinate.getLatitude(), coordinate.getLongitude(), userId);
         if (rowsDeleted==0) {
-            log.debug("User failed to delete location as 0 locations where deleted. LocationId = {}, userId={}", locationId, userId);
-            throw new EntityNotFoundException();
+            log.debug("User failed to delete location as 0 locations where deleted. Location = {}, userId={}", coordinate, userId);
+            throw new EntityNotFoundException("location not found");
         }
-        log.debug("user with id ({}) deleted location with id ({})", userId, locationId);
+        log.debug("user with id ({}) deleted location with ({})", userId, coordinate);
     }
 
+    //TODO mb collect Futures and in the  end get Values
     @Transactional(readOnly = true)
     public LocationPageDTO selectPaginated(int pageNumber, Long userID) throws Exception {
         List<Location> locations = locationRepository.getPage(pageNumber, userID);
@@ -95,6 +97,9 @@ public class LocationService {
             if((dto = locationWeatherCache.getIfPresent(coordinate))==null){
                 log.debug("could not find location with such coordinate in cache {}", coordinate);
                 dto = weatherAPIService.getLocationWeatherByCoordinates(coordinate, location.getId());
+                dto.setCity(location.getName());
+                dto.setLatitude(location.getLatitude());
+                dto.setLongitude(location.getLongitude());
                 locationWeatherCache.put(coordinate, dto);
             }
             else{
