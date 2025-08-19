@@ -3,7 +3,7 @@ package org.example.controllers.validation.validators;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 import org.example.controllers.validation.annotations.UserRegistrationInfo;
-import org.example.dto.requests_dtos.UserRegistrationDTO;
+import org.example.dto.user.UserRegistrationDTO;
 import org.springframework.stereotype.Component;
 import org.thymeleaf.util.StringUtils;
 

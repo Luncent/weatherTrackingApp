@@ -5,24 +5,37 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
+import lombok.Setter;
 import lombok.SneakyThrows;
-import org.example.dto.LocationWeatherDTO;
-import org.example.dto.UnsavedLocationDTO;
-import org.springframework.stereotype.Component;
+import org.example.dto.locations.LocationSaveDTO;
+import org.example.dto.locations.LocationWeatherDTO;
+import org.example.dto.locations.UnsavedLocationDTO;
+import org.example.entities.Location;
+import org.example.entities.User;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
-@Component
-@AllArgsConstructor
-public class LocationMapper {
 
-    private final ObjectMapper objectMapper;
+@Mapper(componentModel = "spring")
+@Setter
+public abstract class LocationMapper {
 
+    @Autowired
+    private ObjectMapper objectMapper;
 
-    public LocationWeatherDTO convertToLocationWeatherDTO(String jsonString, Long locationId) throws JsonProcessingException {
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "name", expression = "java(saveDTO.getName())")
+    @Mapping(target = "latitude", expression = "java(saveDTO.getLatitude())")
+    @Mapping(target = "longitude", expression = "java(saveDTO.getLongitude())")
+    @Mapping(target = "user", source = "user")
+    public abstract Location map(LocationSaveDTO saveDTO, User user);
+
+    public LocationWeatherDTO mapToWeatherInfo(String jsonString) throws JsonProcessingException {
         JsonNode rootNode = objectMapper.readTree(jsonString);
 
         String city = rootNode.get("name").asText();
@@ -36,7 +49,6 @@ public class LocationMapper {
                 .findFirst()
                 .orElseThrow(()->new EntityNotFoundException("weather description not found"));
         String weatherDescription = firstWeather.get("description").asText();
-                //.collect(Collectors.joining(","));
         String weatherIcon = firstWeather.get("icon").asText();
 
         JsonNode mainNode = rootNode.get("main");
@@ -48,19 +60,19 @@ public class LocationMapper {
         String countryCode = sysNode.get("country").asText();
 
         return new LocationWeatherDTO(
-                locationId, temperature, feelsLikeTemperature, humidity ,longitude, latitude ,countryCode ,weatherDescription, city, weatherIcon
+                temperature, feelsLikeTemperature, humidity ,longitude, latitude ,countryCode ,weatherDescription, city, weatherIcon
         );
     }
 
-    public List<UnsavedLocationDTO> convertToLocationDTOList(String json) throws JsonProcessingException {
+    public List<UnsavedLocationDTO> map(String json) throws JsonProcessingException {
         JsonNode locations = objectMapper.readTree(json);
         return StreamSupport.stream(locations.spliterator(), false)
-                .map(this::convertToLocationDTO)
+                .map(this::map)
                 .toList();
     }
 
     @SneakyThrows
-    private UnsavedLocationDTO convertToLocationDTO(JsonNode location){
+    private UnsavedLocationDTO map(JsonNode location){
         String name = location.get("name").asText();
         BigDecimal longitude = location.get("lon").decimalValue();
         BigDecimal latitude = location.get("lat").decimalValue();

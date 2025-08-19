@@ -1,12 +1,11 @@
 package org.example.mappers;
 
-import org.example.dto.UserDTO;
+import org.example.dto.user.UserDTO;
 import org.example.entities.HttpSession;
 import org.example.entities.User;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Controller;
 
 @Component
 @Mapper(componentModel = "spring")

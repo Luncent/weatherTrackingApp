@@ -4,9 +4,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.example.controllers.cookies.CookieHandler;
-import org.example.dto.LocationPageDTO;
-import org.example.dto.LocationWeatherDTO;
-import org.example.dto.requests_dtos.LocationSaveDTO;
+import org.example.dto.locations.LocationPageDTO;
+import org.example.dto.locations.LocationSaveDTO;
 import org.example.entities.User;
 import org.example.exceptions.EntityExistsException;
 import org.example.exceptions.EntityNotFoundException;
@@ -19,7 +18,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import java.math.BigDecimal;
 import java.util.UUID;
 
 import static java.util.List.of;
@@ -36,35 +34,6 @@ public class LocationsController {
     private final WeatherAPIService weatherAPIService;
 
 
-   /* private LocationPageDTO mockLocationPageDTO(Integer currentPage){
-        LocationWeatherDTO locationWeatherDTO = new LocationWeatherDTO(
-                1L,
-                BigDecimal.ONE,
-                BigDecimal.ONE,
-                2,
-                BigDecimal.ONE,
-                BigDecimal.ONE,
-                "BY",
-                "snow",
-                "Zhodino",
-                "13n"
-        );
-        LocationWeatherDTO locationWeatherDTO2 = new LocationWeatherDTO(
-                2L,
-                BigDecimal.ONE,
-                BigDecimal.ONE,
-                2,
-                BigDecimal.ONE,
-                BigDecimal.ONE,
-                "BY",
-                "few clouds",
-                "Zhodino",
-                "02d"
-        );
-        return new LocationPageDTO(of(locationWeatherDTO,locationWeatherDTO2), currentPage, 10L);
-    }*/
-
-
     @GetMapping
     public String myLocations(@RequestParam(required = false, name = "currentPage") Integer currentPage,
                               Model model, HttpServletRequest request) throws Exception {
@@ -72,7 +41,7 @@ public class LocationsController {
             UUID sessionId = cookieHandler.getSessionCookie(request);
             User user = sessionService.findByIdAndCheckActive(sessionId).getUser();
 
-            LocationPageDTO page = locationService.selectPaginated(currentPage==null?1:currentPage, user.getId());
+            LocationPageDTO page = locationService.selectPaginated(currentPage==null ? 1 : currentPage, user.getId());
             System.out.println(page.locationWeatherDTOList().size());
             model.addAttribute("myLocations", page);
             model.addAttribute("username", user.getLogin());
@@ -80,8 +49,6 @@ public class LocationsController {
             log.debug("{} session not found", request.getRequestURI());
             return "my_locations";
         }
-
-        //LocationPageDTO page = mockLocationPageDTO(currentPage==null?1:currentPage);
 
         return "my_locations";
     }
@@ -104,12 +71,12 @@ public class LocationsController {
     //TODO show error message if location already saved
     @PostMapping("/locations")
     public String save(LocationSaveDTO location, @RequestParam("searchVal") String searchVal,
-                       Model model, HttpServletRequest request) throws EntityNotFoundException, EntityExistsException {
+                       Model model, HttpServletRequest request) throws EntityExistsException {
         try {
             UUID sessionId = cookieHandler.getSessionCookie(request);
             User user = sessionService.findByIdAndCheckActive(sessionId).getUser();
             model.addAttribute("username", user.getLogin());
-            locationService.save(location.getName(),location.getLatitude(),location.getLongitude(), user.getId());
+            locationService.save(location, user.getId());
         }catch (NoAvailableSessionException e) {
             log.debug("{} session not found", request.getRequestURI());
         }

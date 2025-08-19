@@ -17,7 +17,8 @@ import static java.lang.Double.parseDouble;
 import static java.math.BigDecimal.valueOf;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
-import static test_constants.LocationDTOConstants.LOCATION_WEATHER_DTO;
+import static test_constants.LocationDTOConstants.LOCATION_SAVE_DTO_DTO;
+import static test_constants.LocationDTOConstants.LOCATION_SAVE_DTO_DTO;
 
 @IT
 public class LocationServiceTest {
@@ -38,7 +39,7 @@ public class LocationServiceTest {
         Long userId = 1L;
 
         Location location = locationService
-                .save(LOCATION_WEATHER_DTO.name(), LOCATION_WEATHER_DTO.latitude(), LOCATION_WEATHER_DTO.longitude(), userId);
+                .save(LOCATION_SAVE_DTO_DTO, userId);
         Long savedLocationId = location.getId();
 
         sessionFactory.getCurrentSession().detach(location);
@@ -47,7 +48,7 @@ public class LocationServiceTest {
 
         location = locationService.findById(savedLocationId);
 
-        assertThat(location.getName()).isEqualTo(LOCATION_WEATHER_DTO.name());
+        assertThat(location.getName()).isEqualTo(LOCATION_SAVE_DTO_DTO.getName());
     }
 
     @Test
@@ -55,20 +56,14 @@ public class LocationServiceTest {
         Long existingUserId = 1L;
         Long nonExistingUserId = -12L;
 
-        locationService.save(LOCATION_WEATHER_DTO.name(), LOCATION_WEATHER_DTO.latitude(), LOCATION_WEATHER_DTO.longitude(), existingUserId);
+        locationService.save(LOCATION_SAVE_DTO_DTO, existingUserId);
 
         assertAll(
                 () -> assertThrows(EntityExistsException.class, () -> locationService
-                        .save(LOCATION_WEATHER_DTO.name(), LOCATION_WEATHER_DTO.latitude(), LOCATION_WEATHER_DTO.longitude(), existingUserId)),
-                () -> assertThrows(EntityNotFoundException.class, () -> locationService.save("any()", BigDecimal.ONE, BigDecimal.ONE, nonExistingUserId))
+                        .save(LOCATION_SAVE_DTO_DTO, existingUserId)),
+                () -> assertThrows(EntityNotFoundException.class, () -> locationService.save(LOCATION_SAVE_DTO_DTO, nonExistingUserId))
         );
     }
-
-/*    @Test
-    public void cacheLocationSuccess() throws Exception {
-        LocationPageDTO page = locationService.selectPaginated(1, 1L);
-        locationService.selectPaginated(1, 1L);
-    }*/
 
     @Test
     public void userDeletesHisOwnLocation() throws UnauthorizedException, EntityNotFoundException {

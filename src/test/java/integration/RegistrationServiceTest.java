@@ -3,7 +3,6 @@ package integration;
 import annotations.IT;
 import org.example.entities.HttpSession;
 import org.example.exceptions.EntityExistsException;
-import org.example.services.PasswordEncodingService;
 import org.example.services.RegistrationService;
 import org.example.services.SessionService;
 import org.example.services.UserService;
@@ -25,8 +24,6 @@ public class RegistrationServiceTest {
     @Autowired
     private RegistrationService registrationService;
     @Autowired
-    private PasswordEncodingService passwordEncodingService;
-    @Autowired
     private UserService userService;
     @Autowired
     private SessionService sessionService;
@@ -35,7 +32,7 @@ public class RegistrationServiceTest {
     @Test
     public void registrationOfNonExistingUserWithSessionCreation(@Value("${session_duration_sec}") int sessionTimeSec) throws Exception {
         //register new user
-        UUID sessionId = registrationService.register(ANDREW.getLogin(), ANDREW.getPassword(), ANDREW.getRepeatedPassword());
+        UUID sessionId = registrationService.register(ANDREW.getLogin(), ANDREW.getPassword());
         SECONDS.sleep(sessionTimeSec-1);
         HttpSession session = sessionService.findByIdAndCheckActive(sessionId);
         assertTrue(sessionService.isSessionActive(session));
@@ -43,8 +40,8 @@ public class RegistrationServiceTest {
 
     @Test
     public void registrationWithExistingLogin() throws Exception {
-        registrationService.register(ANDREW.getLogin(), ANDREW.getPassword(), ANDREW.getRepeatedPassword());
+        registrationService.register(ANDREW.getLogin(), ANDREW.getPassword());
         assertThrows(EntityExistsException.class, () -> registrationService
-                .register(ANDREW.getLogin(), ANDREW.getPassword(), ANDREW.getRepeatedPassword()));
+                .register(ANDREW.getLogin(), ANDREW.getPassword()));
     }
 }

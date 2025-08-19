@@ -1,5 +1,6 @@
 package org.example.repositories;
 
+import jakarta.persistence.Id;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.springframework.context.annotation.Scope;
@@ -8,23 +9,24 @@ import org.springframework.transaction.annotation.Transactional;
 
 
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-
-//using transactional manager so this code doesn't expected to be
-//used with rollbacks and commits handling in service layer.
-// Also each thread has own transaction (Datasource config)
-//so getCurrentTransaction wont lead to Race Conditions
 
 @Transactional
 @Scope(proxyMode = ScopedProxyMode.TARGET_CLASS)
 public abstract class BaseRepository<T,K extends Serializable> implements CRUDRepository<T,K> {
     protected Class<T> clazz;
     protected SessionFactory sessionFactory;
+    protected String idFieldName;
 
-    public BaseRepository(SessionFactory sessionFactory, Class clazz){
+    public BaseRepository(SessionFactory sessionFactory, Class<T> clazz){
         this.sessionFactory = sessionFactory;
         this.clazz=clazz;
+        this.idFieldName = Arrays.stream(clazz.getDeclaredFields())
+                .filter(field -> field.isAnnotationPresent(Id.class))
+                .findFirst().orElseThrow(()->new RuntimeException("Id field not found for class"+clazz.getName()))
+                .getName();
     }
 
     @Override
@@ -59,6 +61,8 @@ public abstract class BaseRepository<T,K extends Serializable> implements CRUDRe
     @Override
     public void delete(K id) {
         Session session = sessionFactory.getCurrentSession();
-        session.delete(session.get(clazz, id));
+        session.createQuery("DELETE FROM "+clazz.getName()+" WHERE "+idFieldName+" = :id", clazz)
+                .setParameter("id", id)
+                .executeUpdate();
     }
 }

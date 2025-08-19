@@ -16,9 +16,7 @@ import java.util.UUID;
 @Service
 @Log4j2
 public class SessionService {
-
     private final Duration sessionDuration;
-
     private final HttpSessionRepository httpSessionRepository;
 
     public SessionService(HttpSessionRepository httpSessionRepository,
@@ -26,7 +24,6 @@ public class SessionService {
         this.httpSessionRepository = httpSessionRepository;
         this.sessionDuration = Duration.ofSeconds(sessionDuration);
     }
-
 
     public HttpSession findByIdAndCheckActive(UUID id) throws NoAvailableSessionException {
         Optional<HttpSession> sessionOpt = httpSessionRepository.getById(id);

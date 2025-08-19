@@ -4,7 +4,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.example.controllers.cookies.CookieHandler;
-import org.example.dto.requests_dtos.UserRegistrationDTO;
+import org.example.dto.user.UserRegistrationDTO;
 import org.example.exceptions.EntityExistsException;
 import org.example.services.RegistrationService;
 import org.springframework.stereotype.Controller;
@@ -43,7 +43,7 @@ public class RegistrationController {
         }
         try {
             UUID sessionId = registrationService
-                    .register(newUser.getLogin(), newUser.getPassword(), newUser.getPasswordConfirm());
+                    .register(newUser.getLogin(), newUser.getPassword());
             cookieHandler.setSessionCookie(response, sessionId);
             return "redirect:/app/";
         } catch (EntityExistsException e) {

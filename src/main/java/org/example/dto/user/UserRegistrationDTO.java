@@ -1,8 +1,7 @@
-package org.example.dto.requests_dtos;
+package org.example.dto.user;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
-import lombok.Value;
 import org.example.controllers.validation.annotations.UserRegistrationInfo;
 
 @Data

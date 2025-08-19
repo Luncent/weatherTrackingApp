@@ -1,21 +1,24 @@
 package org.example.services;
 
 import lombok.extern.log4j.Log4j2;
-import org.example.dto.LocationWeatherDTO;
-import org.example.dto.UnsavedLocationDTO;
+import org.example.dto.locations.LocationWeatherDTO;
+import org.example.dto.locations.UnsavedLocationDTO;
 import org.example.mappers.LocationMapper;
 import org.example.model.Coordinate;
+import org.example.model.LocationData;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
 
-import java.math.BigDecimal;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 @Service
 @Log4j2
@@ -33,22 +36,39 @@ public class WeatherAPIService {
         this.httpClient = httpClient;
     }
 
+    public List<LocationWeatherDTO> getLocationsWeatherByCoordinates(List<LocationData> locationDataList) throws Exception {
+        List<LocationWeatherDTO> locationWeatherDTOList = new ArrayList<>();
+        List<CompletableFuture<HttpResponse<String>>> futures = new LinkedList<>();
 
-    /**
-     * @throws Exception with message that describes weather api call error
-     */
-    public LocationWeatherDTO getLocationWeatherByCoordinates(Coordinate coordinate, Long locationId) throws Exception {
+        //starting all requests non-blocking way
+        for(LocationData location : locationDataList) {
+            futures.add(getFutureLocation(location.getCoordinate()));
+        }
+
+        for(CompletableFuture<HttpResponse<String>> future : futures) {
+            String jsonBody = getResponseBody(future.get());
+            LocationWeatherDTO weatherDTO = locationMapper.mapToWeatherInfo(jsonBody);
+
+            LocationData locationData = locationDataList.removeFirst();
+            weatherDTO.setCity(locationData.getName());
+            weatherDTO.setLatitude(locationData.getLatitude());
+            weatherDTO.setLongitude(locationData.getLongitude());
+
+            locationWeatherDTOList.add(weatherDTO);
+        }
+
+        return locationWeatherDTOList;
+    }
+
+    private CompletableFuture<HttpResponse<String>> getFutureLocation(Coordinate coordinate) throws URISyntaxException {
         HttpRequest getRequest = HttpRequest.newBuilder()
                 .uri(new URI(String.format(getLocationWeatherByCoordinatesRequestTemplate, coordinate.getLatitude(), coordinate.getLongitude())))
                 .GET()
                 .version(HttpClient.Version.HTTP_1_1)
                 .build();
         log.debug("sending request to weather api");
-        CompletableFuture<HttpResponse<String>> futureResponse = httpClient.sendAsync(getRequest, HttpResponse.BodyHandlers.ofString());
-        String jsonBody = getResponseBody(futureResponse.get());
-        return locationMapper.convertToLocationWeatherDTO(jsonBody, locationId);
+        return httpClient.sendAsync(getRequest, HttpResponse.BodyHandlers.ofString());
     }
-
 
     public List<UnsavedLocationDTO> getLocationsByCityName(String cityName) throws Exception {
         HttpRequest getLocationsByNameReq = HttpRequest.newBuilder()
@@ -58,7 +78,7 @@ public class WeatherAPIService {
                 .build();
         CompletableFuture<HttpResponse<String>> responseFuture = httpClient.sendAsync(getLocationsByNameReq, HttpResponse.BodyHandlers.ofString());
         log.debug("sending search request to weather api");
-        return locationMapper.convertToLocationDTOList(getResponseBody(responseFuture.get()));
+        return locationMapper.map(getResponseBody(responseFuture.get()));
     }
 
     private String getResponseBody(HttpResponse<String> response) throws Exception {

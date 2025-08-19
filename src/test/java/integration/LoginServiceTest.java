@@ -30,7 +30,7 @@ public class LoginServiceTest {
     @Test
     @DisplayName("user logins existing account and session opens")
     public void existingUserSuccessLoginWithCorrectPasswordAndSessionCreated(@Value("${session_duration_sec}") int sessionTimeSec) throws Exception {
-        registrationService.register(ANDREW.getLogin(), ANDREW.getPassword(), ANDREW.getRepeatedPassword());
+        registrationService.register(ANDREW.getLogin(), ANDREW.getPassword());
         SECONDS.sleep(1);
         UUID sessionId = loginService.login(ANDREW.getLogin(), ANDREW.getPassword());
         SECONDS.sleep(sessionTimeSec - 1);
@@ -41,7 +41,7 @@ public class LoginServiceTest {
     @Test
     @DisplayName("user logins with wrong password or login")
     public void userGetsExceptionWhenLoginWithWrongPasswordOrLogin() throws Exception {
-        registrationService.register(ANDREW.getLogin(), ANDREW.getPassword(), ANDREW.getRepeatedPassword());
+        registrationService.register(ANDREW.getLogin(), ANDREW.getPassword());
         assertAll(
                 ()->assertThrows(EntityNotFoundException.class, ()->loginService.login("wrong", ANDREW.getPassword())),
                 ()->assertThrows(EntityNotFoundException.class, ()->loginService.login(ANDREW.getLogin(), "wrong"))

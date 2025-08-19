@@ -1,4 +1,4 @@
-package org.example.dto.requests_dtos;
+package org.example.dto.user;
 
 import lombok.Data;
 import org.example.controllers.validation.annotations.UserLoginInfo;

@@ -1,4 +1,4 @@
-package org.example.dto.requests_dtos;
+package org.example.dto.locations;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

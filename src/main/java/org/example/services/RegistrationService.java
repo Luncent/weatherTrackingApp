@@ -6,6 +6,7 @@ import org.example.entities.HttpSession;
 import org.example.entities.User;
 import org.example.exceptions.EntityExistsException;
 import org.hibernate.exception.ConstraintViolationException;
+import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,16 +16,14 @@ import java.util.UUID;
 @AllArgsConstructor
 @Log4j2
 public class RegistrationService {
-
     private final UserService userService;
     private final SessionService sessionService;
-    private final PasswordEncodingService passwordEncodingService;
 
     @Transactional(rollbackFor = EntityExistsException.class)
-    public UUID register(String login, String password, String passwordRepeated) throws EntityExistsException{
+    public UUID register(String login, String password) throws EntityExistsException{
         User newUser = null;
         try {
-            newUser = userService.save(login, passwordEncodingService.encryptPassword(password));
+            newUser = userService.save(login, BCrypt.hashpw(password, BCrypt.gensalt()));
             log.debug(newUser.getPassword());
         }
         catch (ConstraintViolationException e) {

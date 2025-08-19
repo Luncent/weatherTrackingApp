@@ -1,4 +1,4 @@
-package org.example.dto;
+package org.example.dto.locations;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -11,7 +11,6 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 @NoArgsConstructor
 public class LocationWeatherDTO {
-    private Long id;
     private BigDecimal temperature;
     private BigDecimal feelsLikeTemperature;
     private Integer humidity;

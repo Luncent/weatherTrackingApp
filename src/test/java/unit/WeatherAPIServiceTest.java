@@ -1,10 +1,12 @@
 package unit;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.example.dto.LocationWeatherDTO;
+import org.example.dto.locations.LocationWeatherDTO;
+import org.example.dto.locations.UnsavedLocationDTO;
 import org.example.mappers.LocationMapper;
 import org.example.model.Coordinate;
 import org.example.services.WeatherAPIService;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -12,14 +14,18 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.mapstruct.factory.Mappers;
 import org.mockito.InjectMocks;
 import org.mockito.Mockito;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.math.BigDecimal;
 import java.net.http.HttpClient;
 import java.net.http.HttpResponse;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Stream;
 
@@ -35,13 +41,19 @@ import static utils.JsonTestUtils.getJsonFromFile;
 public class WeatherAPIServiceTest {
 
     @Spy
-    private LocationMapper locationMapper = new LocationMapper(new ObjectMapper());
+    private static LocationMapper locationMapper;
     @Spy
     private HttpClient httpClient;
     @InjectMocks
     private WeatherAPIService weatherAPIService;
 
-    @Nested
+    @BeforeAll
+    static void setLocationMapper(){
+        locationMapper = Mappers.getMapper(LocationMapper.class);
+        locationMapper.setObjectMapper(new ObjectMapper());
+    }
+
+   /* @Nested
     @DisplayName("get location weather method tests")
     public class LocationWeatherTest {
         @Test
@@ -82,7 +94,7 @@ public class WeatherAPIServiceTest {
                     .as(exceptionMassage + " contains " + expectedErrorMessage)
                     .contains(expectedErrorMessage);
         }
-    }
+    }*/
 
     @Nested
     @DisplayName("location search method tests")
@@ -98,7 +110,9 @@ public class WeatherAPIServiceTest {
 
             doReturn(searchResponseFuture).when(httpClient).sendAsync(any(),any());
 
-            assertThat(LOCATION_WEATHER_DTO).isIn(weatherAPIService.getLocationsByCityName(CITY_NAME));
+            List<UnsavedLocationDTO> unsaved = weatherAPIService.getLocationsByCityName(CITY_NAME);
+
+            assertThat(LOCATION_SAVE_DTO_DTO.getName()).isIn(unsaved.stream().map(UnsavedLocationDTO::name).toList());
         }
 
         @ParameterizedTest

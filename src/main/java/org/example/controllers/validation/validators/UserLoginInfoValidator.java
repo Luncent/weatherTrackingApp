@@ -4,7 +4,7 @@ import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 import org.apache.commons.lang3.StringUtils;
 import org.example.controllers.validation.annotations.UserLoginInfo;
-import org.example.dto.requests_dtos.UserLoginDTO;
+import org.example.dto.user.UserLoginDTO;
 import org.springframework.stereotype.Component;
 
 @Component
