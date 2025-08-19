@@ -31,7 +31,6 @@ public abstract class BaseRepository<T,K extends Serializable> implements CRUDRe
     public T save(T entity) {
         Session session = sessionFactory.getCurrentSession();
         session.persist(entity);
-        session.flush();
         return entity;
     }
 
@@ -54,7 +53,6 @@ public abstract class BaseRepository<T,K extends Serializable> implements CRUDRe
     @Override
     public T update(T entity) {
         sessionFactory.getCurrentSession().merge(entity);
-        sessionFactory.getCurrentSession().flush();
         return entity;
     }
 
@@ -62,6 +60,5 @@ public abstract class BaseRepository<T,K extends Serializable> implements CRUDRe
     public void delete(K id) {
         Session session = sessionFactory.getCurrentSession();
         session.delete(session.get(clazz, id));
-        session.flush();
     }
 }
