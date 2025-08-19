@@ -43,10 +43,11 @@ public class LoginController {
 
     @PostMapping
     public String login(@Validated UserLoginDTO loginDTO, BindingResult validationResult,
-                        HttpServletResponse response, RedirectAttributes redirectAttributes){
+                        HttpServletResponse response, RedirectAttributes redirectAttributes) throws EntityNotFoundException {
         if(validationResult.hasErrors()){
             redirectAttributes.addFlashAttribute("errors", getErrorsMessages(validationResult));
             log.debug("validation errors {}", getErrorsMessages(validationResult));
+
             return "redirect:/app/login";
         }
         try {
