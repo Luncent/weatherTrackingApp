@@ -3,7 +3,8 @@ package org.example.controllers;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.example.controllers.cookies.CookieHandler;
+import org.example.utils.AuthContextHolder;
+import org.example.utils.CookieHandler;
 import org.example.dto.user.UserLoginDTO;
 import org.example.services.LoginService;
 import org.springframework.stereotype.Controller;
@@ -35,7 +36,9 @@ public class LoginController {
     @PostMapping
     public String login(@Validated UserLoginDTO loginDTO, BindingResult validationResult,
                         HttpServletResponse response, RedirectAttributes redirectAttributes) {
-        //TODO maybe add util method or extend from interface with def method that produces Optional<String>
+
+        log.debug(AuthContextHolder.getAuthContext());
+
         if (validationResult.hasErrors()) {
             redirectAttributes.addFlashAttribute("errors", getErrorsMessages(validationResult));
             log.debug("validation errors {}", getErrorsMessages(validationResult));

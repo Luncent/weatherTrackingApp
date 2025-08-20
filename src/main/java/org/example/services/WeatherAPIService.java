@@ -21,6 +21,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 @Service
 @Log4j2
 public class WeatherAPIService {
@@ -78,7 +80,7 @@ public class WeatherAPIService {
 
     public List<UnsavedLocationDTO> searchByCityName(String cityName){
         try {
-            String encodedCityName = URLEncoder.encode(cityName, "UTF-8");
+            String encodedCityName = URLEncoder.encode(cityName, UTF_8);
             HttpRequest getLocationsByNameReq = HttpRequest.newBuilder()
                     .uri(new URI(String.format(getLocationsByCityNameRequestTemplate, encodedCityName)))
                     .GET()

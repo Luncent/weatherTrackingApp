@@ -4,7 +4,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.example.controllers.cookies.CookieHandler;
+import org.example.utils.CookieHandler;
 import org.example.exception_handling.exceptions.NoAvailableSessionException;
 import org.example.services.SessionService;
 import org.springframework.stereotype.Controller;

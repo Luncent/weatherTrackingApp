@@ -1,8 +1,8 @@
-package org.example.controllers.validation.annotations;
+package org.example.validation.annotations;
 
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;
-import org.example.controllers.validation.validators.UserLoginInfoValidator;
+import org.example.validation.validators.UserLoginInfoValidator;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

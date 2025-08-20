@@ -17,6 +17,8 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 @Log4j2
 public class GlobalExceptionHandler {
 
+
+    //TODO redirect on error?
     @ExceptionHandler(WeatherApiException.class)
     public ModelAndView handleWeatherApiException(final WeatherApiException weatherApiException) {
         log.error(weatherApiException.getMessage(), weatherApiException);
@@ -37,7 +39,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(AuthException.class)
     public ModelAndView handleAuthException(final AuthException authException, RedirectAttributes redirectAttributes) {
-        log.debug(authException.getMessage(), authException);
+        log.error(authException.getMessage(), authException);
         redirectAttributes.addFlashAttribute("errors", authException.getMessage());
         return switch(authException.getErrorType()){
             case LOGIN -> new ModelAndView("redirect:/app/login");

@@ -1,5 +1,9 @@
 package org.example.config;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import lombok.extern.log4j.Log4j2;
+import org.example.utils.AuthContextHolder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -13,10 +17,8 @@ import org.springframework.validation.Validator;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 import org.springframework.validation.beanvalidation.OptionalValidatorFactoryBean;
 import org.springframework.web.filter.CharacterEncodingFilter;
-import org.springframework.web.servlet.config.annotation.EnableWebMvc;
-import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
-import org.springframework.web.servlet.config.annotation.ViewResolverRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import org.springframework.web.servlet.HandlerInterceptor;
+import org.springframework.web.servlet.config.annotation.*;
 import org.thymeleaf.spring6.SpringTemplateEngine;
 import org.thymeleaf.spring6.templateresolver.SpringResourceTemplateResolver;
 import org.thymeleaf.spring6.view.ThymeleafViewResolver;
@@ -79,6 +81,27 @@ public class SpringMVCConfig implements WebMvcConfigurer {
     public Validator getValidator() {
         Validator validator = new LocalValidatorFactoryBean();
         return validator;
+    }
+
+    @Bean
+    public ThreadLocalCleanUpInterceptor cleanUpInterceptor() {
+        return new ThreadLocalCleanUpInterceptor();
+    }
+
+    @Override
+    public void addInterceptors(InterceptorRegistry registry) {
+        registry.addInterceptor(cleanUpInterceptor());
+    }
+
+    @Log4j2
+    public static class ThreadLocalCleanUpInterceptor implements HandlerInterceptor {
+        @Override
+        public void afterCompletion(HttpServletRequest request,
+                                    HttpServletResponse response,
+                                    Object handler, Exception ex) {
+            log.debug("Cleaning up thread local variables");
+            AuthContextHolder.cleanUp();
+        }
     }
 
 }

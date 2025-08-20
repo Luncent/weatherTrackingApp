@@ -3,7 +3,7 @@ package org.example.controllers;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.example.controllers.cookies.CookieHandler;
+import org.example.utils.CookieHandler;
 import org.example.dto.locations.LocationPageDTO;
 import org.example.dto.locations.LocationSaveDTO;
 import org.example.entities.User;
@@ -19,7 +19,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 
@@ -35,7 +34,6 @@ public class LocationsController {
     private final SessionService sessionService;
     private final LocationService locationService;
     private final WeatherAPIService weatherAPIService;
-
 
     @GetMapping
     public String myLocations(@RequestParam(required = false, name = "currentPage") Integer currentPage,
@@ -71,8 +69,7 @@ public class LocationsController {
         return "search_locations";
     }
 
-    //TODO show error message if location already saved
-    @PostMapping("/locations")
+    @PostMapping("/locations/add")
     public String save(LocationSaveDTO location, @RequestParam("searchVal") String searchVal,
                        Model model, HttpServletRequest request) {
         try {

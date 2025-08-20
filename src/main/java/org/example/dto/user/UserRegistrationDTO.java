@@ -2,7 +2,7 @@ package org.example.dto.user;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
-import org.example.controllers.validation.annotations.UserRegistrationInfo;
+import org.example.validation.annotations.UserRegistrationInfo;
 
 @Data
 @UserRegistrationInfo

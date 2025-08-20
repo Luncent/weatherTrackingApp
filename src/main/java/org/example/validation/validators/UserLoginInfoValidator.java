@@ -1,9 +1,9 @@
-package org.example.controllers.validation.validators;
+package org.example.validation.validators;
 
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 import org.apache.commons.lang3.StringUtils;
-import org.example.controllers.validation.annotations.UserLoginInfo;
+import org.example.validation.annotations.UserLoginInfo;
 import org.example.dto.user.UserLoginDTO;
 import org.springframework.stereotype.Component;
 
