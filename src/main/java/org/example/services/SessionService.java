@@ -1,12 +1,14 @@
 package org.example.services;
 
+import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.log4j.Log4j2;
 import org.example.entities.HttpSession;
 import org.example.entities.User;
-import org.example.exceptions.NoAvailableSessionException;
+import org.example.exception_handling.exceptions.NoAvailableSessionException;
 import org.example.repositories.repos_impl.HttpSessionRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -43,8 +45,11 @@ public class SessionService {
         );
     }
 
-    public void deleteById(UUID sessionID){
-        httpSessionRepository.delete(sessionID);
+    @Transactional
+    public void deleteUserSessions(UUID sessionId) {
+        HttpSession session = httpSessionRepository.getById(sessionId)
+                .orElseThrow(()-> new EntityNotFoundException("session not found uuid="+sessionId));
+        httpSessionRepository.deleteAllUserSessions(session.getUser().getId());
     }
 
     public boolean isSessionActive(HttpSession session) {

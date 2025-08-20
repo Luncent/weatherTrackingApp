@@ -5,7 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.example.controllers.cookies.CookieHandler;
 import org.example.dto.user.UserRegistrationDTO;
-import org.example.exceptions.EntityExistsException;
+import org.example.exception_handling.exceptions.repository.EntityExistsException;
 import org.example.services.RegistrationService;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
@@ -29,32 +29,20 @@ public class RegistrationController {
     private final CookieHandler cookieHandler;
 
     @GetMapping
-    public String getPage(){
+    public String getPage() {
         return "sign_up";
     }
 
     @PostMapping
     public String signUp(@Validated UserRegistrationDTO newUser, BindingResult validationResult,
-                         HttpServletResponse response, RedirectAttributes redirectAttributes){
-        if(validationResult.hasErrors()){
+                         HttpServletResponse response, RedirectAttributes redirectAttributes) {
+        if (validationResult.hasErrors()) {
             log.debug(getErrorsMessages(validationResult));
             redirectAttributes.addFlashAttribute("errors", getErrorsMessages(validationResult));
             return "redirect:/app/registration";
         }
-        try {
-            UUID sessionId = registrationService
-                    .register(newUser.getLogin(), newUser.getPassword());
-            cookieHandler.setSessionCookie(response, sessionId);
-            return "redirect:/app/";
-        } catch (EntityExistsException e) {
-            log.debug("user {} already exists", newUser.getLogin());
-            redirectAttributes.addFlashAttribute("errors", "user "+newUser.getLogin()+" already exists");
-            return "redirect:/app/registration";
-        }
-        catch (Exception ex){
-            log.debug("unexpected error");
-            redirectAttributes.addFlashAttribute("errors", "unexpected error");
-            return "redirect:/app/registration";
-        }
+        UUID sessionId = registrationService.register(newUser.getLogin(), newUser.getPassword());
+        cookieHandler.setSessionCookie(response, sessionId);
+        return "redirect:/app/";
     }
 }

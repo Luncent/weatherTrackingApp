@@ -1,8 +1,8 @@
 package org.example.services;
 
+import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
 import org.example.entities.User;
-import org.example.exceptions.EntityNotFoundException;
 import org.example.repositories.repos_impl.UserRepository;
 import org.springframework.stereotype.Service;
 
@@ -20,7 +20,7 @@ public class UserService {
         );
     }
 
-    public User findByLogin(String login) throws EntityNotFoundException {
+    public User findByLogin(String login){
         return userRepository.findByLogin(login)
                 .orElseThrow(() -> new EntityNotFoundException("User not found"));
     }

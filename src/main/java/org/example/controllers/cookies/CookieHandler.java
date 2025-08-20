@@ -3,7 +3,7 @@ package org.example.controllers.cookies;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.example.exceptions.NoAvailableSessionException;
+import org.example.exception_handling.exceptions.NoAvailableSessionException;
 import org.springframework.stereotype.Component;
 
 import java.util.Optional;

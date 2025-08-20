@@ -5,10 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.example.controllers.cookies.CookieHandler;
 import org.example.dto.user.UserLoginDTO;
-import org.example.exceptions.EntityNotFoundException;
 import org.example.services.LoginService;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,7 +16,6 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.UUID;
 
-import static java.util.List.of;
 import static org.example.utils.ControllersUtil.getErrorsMessages;
 
 @Controller
@@ -31,28 +28,21 @@ public class LoginController {
     private final CookieHandler cookieHandler;
 
     @GetMapping
-    public String getPage(Model model) {
+    public String getPage() {
         return "login";
     }
 
     @PostMapping
     public String login(@Validated UserLoginDTO loginDTO, BindingResult validationResult,
-                        HttpServletResponse response, RedirectAttributes redirectAttributes) throws EntityNotFoundException {
-        if(validationResult.hasErrors()){
+                        HttpServletResponse response, RedirectAttributes redirectAttributes) {
+        //TODO maybe add util method or extend from interface with def method that produces Optional<String>
+        if (validationResult.hasErrors()) {
             redirectAttributes.addFlashAttribute("errors", getErrorsMessages(validationResult));
             log.debug("validation errors {}", getErrorsMessages(validationResult));
-
             return "redirect:/app/login";
         }
-        try {
-            UUID sessionId = loginService.login(loginDTO.getLogin(), loginDTO.getPassword());
-            cookieHandler.setSessionCookie(response, sessionId);
-        }
-        catch (EntityNotFoundException ex){
-            log.debug("wrong login or password");
-            redirectAttributes.addFlashAttribute("errors", of("Неверный логин или пароль"));
-            return "redirect:/app/login";
-        }
+        UUID sessionId = loginService.login(loginDTO.getLogin(), loginDTO.getPassword());
+        cookieHandler.setSessionCookie(response, sessionId);
         return "redirect:/app";
     }
 

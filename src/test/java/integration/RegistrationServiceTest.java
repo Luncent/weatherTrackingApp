@@ -2,7 +2,7 @@ package integration;
 
 import annotations.IT;
 import org.example.entities.HttpSession;
-import org.example.exceptions.EntityExistsException;
+import org.example.exception_handling.exceptions.repository.EntityExistsException;
 import org.example.services.RegistrationService;
 import org.example.services.SessionService;
 import org.example.services.UserService;

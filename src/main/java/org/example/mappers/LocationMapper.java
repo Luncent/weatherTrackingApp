@@ -57,7 +57,7 @@ public abstract class LocationMapper {
         Integer humidity = mainNode.get("humidity").asInt();
 
         JsonNode sysNode = rootNode.get("sys");
-        String countryCode = sysNode.get("country").asText();
+        String countryCode = sysNode.get("country") != null ? sysNode.get("country").asText() : "(Absent)";
 
         return new LocationWeatherDTO(
                 temperature, feelsLikeTemperature, humidity ,longitude, latitude ,countryCode ,weatherDescription, city, weatherIcon

@@ -2,6 +2,7 @@ package org.example;
 
 import jakarta.servlet.*;
 import org.example.config.AppConfig;
+import org.springframework.web.filter.DelegatingFilterProxy;
 import org.springframework.web.servlet.support.AbstractAnnotationConfigDispatcherServletInitializer;
 
 
@@ -10,6 +11,10 @@ public class AnnotationConfigDispatcherServletInitializer extends AbstractAnnota
     @Override
     public void onStartup(ServletContext servletContext) throws ServletException {
         servletContext.setInitParameter("spring.profiles.active", "prod");
+
+        DelegatingFilterProxy delegatingFilter = new DelegatingFilterProxy("authFilter");
+        FilterRegistration.Dynamic  filterRegistration = servletContext.addFilter("authFilter", delegatingFilter);
+        filterRegistration.addMappingForUrlPatterns(null, false, "/*");
         super.onStartup(servletContext);
     }
 

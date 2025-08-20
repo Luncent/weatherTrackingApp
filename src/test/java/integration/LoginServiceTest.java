@@ -1,8 +1,8 @@
 package integration;
 
 import annotations.IT;
+import jakarta.persistence.EntityNotFoundException;
 import org.example.entities.HttpSession;
-import org.example.exceptions.EntityNotFoundException;
 import org.example.services.LoginService;
 import org.example.services.RegistrationService;
 import org.example.services.SessionService;

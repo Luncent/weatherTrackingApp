@@ -3,6 +3,7 @@ package org.example.services;
 import lombok.extern.log4j.Log4j2;
 import org.example.dto.locations.LocationWeatherDTO;
 import org.example.dto.locations.UnsavedLocationDTO;
+import org.example.exception_handling.exceptions.weather_api.WeatherApiException;
 import org.example.mappers.LocationMapper;
 import org.example.model.Coordinate;
 import org.example.model.LocationData;
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URLEncoder;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
@@ -18,7 +20,6 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
 
 @Service
 @Log4j2
@@ -36,25 +37,30 @@ public class WeatherAPIService {
         this.httpClient = httpClient;
     }
 
-    public List<LocationWeatherDTO> getLocationsWeatherByCoordinates(List<LocationData> locationDataList) throws Exception {
+    public List<LocationWeatherDTO> getLocationsWeatherByCoordinates(List<LocationData> locationDataList){
         List<LocationWeatherDTO> locationWeatherDTOList = new ArrayList<>();
         List<CompletableFuture<HttpResponse<String>>> futures = new LinkedList<>();
 
-        //starting all requests non-blocking way
-        for(LocationData location : locationDataList) {
-            futures.add(getFutureLocation(location.getCoordinate()));
+        try {
+            //starting all requests non-blocking way
+            for (LocationData location : locationDataList) {
+                futures.add(getFutureLocation(location.getCoordinate()));
+            }
+
+            for (CompletableFuture<HttpResponse<String>> future : futures) {
+                String jsonBody = proccessResponse(future.get());
+                LocationWeatherDTO weatherDTO = locationMapper.mapToWeatherInfo(jsonBody);
+
+                LocationData locationData = locationDataList.removeFirst();
+                weatherDTO.setCity(locationData.getName());
+                weatherDTO.setLatitude(locationData.getLatitude());
+                weatherDTO.setLongitude(locationData.getLongitude());
+
+                locationWeatherDTOList.add(weatherDTO);
+            }
         }
-
-        for(CompletableFuture<HttpResponse<String>> future : futures) {
-            String jsonBody = getResponseBody(future.get());
-            LocationWeatherDTO weatherDTO = locationMapper.mapToWeatherInfo(jsonBody);
-
-            LocationData locationData = locationDataList.removeFirst();
-            weatherDTO.setCity(locationData.getName());
-            weatherDTO.setLatitude(locationData.getLatitude());
-            weatherDTO.setLongitude(locationData.getLongitude());
-
-            locationWeatherDTOList.add(weatherDTO);
+        catch (Exception ex){
+            throw new WeatherApiException(ex);
         }
 
         return locationWeatherDTOList;
@@ -70,18 +76,23 @@ public class WeatherAPIService {
         return httpClient.sendAsync(getRequest, HttpResponse.BodyHandlers.ofString());
     }
 
-    public List<UnsavedLocationDTO> getLocationsByCityName(String cityName) throws Exception {
-        HttpRequest getLocationsByNameReq = HttpRequest.newBuilder()
-                .uri(new URI(String.format(getLocationsByCityNameRequestTemplate, cityName)))
-                .GET()
-                .version(HttpClient.Version.HTTP_1_1)
-                .build();
-        CompletableFuture<HttpResponse<String>> responseFuture = httpClient.sendAsync(getLocationsByNameReq, HttpResponse.BodyHandlers.ofString());
-        log.debug("sending search request to weather api");
-        return locationMapper.map(getResponseBody(responseFuture.get()));
+    public List<UnsavedLocationDTO> searchByCityName(String cityName){
+        try {
+            String encodedCityName = URLEncoder.encode(cityName, "UTF-8");
+            HttpRequest getLocationsByNameReq = HttpRequest.newBuilder()
+                    .uri(new URI(String.format(getLocationsByCityNameRequestTemplate, encodedCityName)))
+                    .GET()
+                    .version(HttpClient.Version.HTTP_1_1)
+                    .build();
+            CompletableFuture<HttpResponse<String>> responseFuture = httpClient.sendAsync(getLocationsByNameReq, HttpResponse.BodyHandlers.ofString());
+            log.debug("sending search request to weather api");
+            return locationMapper.map(proccessResponse(responseFuture.get()));
+        }catch (Exception ex){
+            throw new WeatherApiException(ex);
+        }
     }
 
-    private String getResponseBody(HttpResponse<String> response) throws Exception {
+    private String proccessResponse(HttpResponse<String> response) throws Exception {
         int statusCode = response.statusCode();
         if (is2xx(statusCode)) {
             return response.body();

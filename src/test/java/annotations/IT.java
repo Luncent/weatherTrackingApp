@@ -1,6 +1,6 @@
 package annotations;
 
-import org.example.config.TestConfig;
+import config.TestConfig;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 import org.springframework.transaction.annotation.Transactional;

@@ -1,10 +1,8 @@
 package unit;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.example.dto.locations.LocationWeatherDTO;
 import org.example.dto.locations.UnsavedLocationDTO;
 import org.example.mappers.LocationMapper;
-import org.example.model.Coordinate;
 import org.example.services.WeatherAPIService;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
@@ -16,13 +14,9 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mapstruct.factory.Mappers;
 import org.mockito.InjectMocks;
-import org.mockito.Mockito;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import java.math.BigDecimal;
 import java.net.http.HttpClient;
 import java.net.http.HttpResponse;
 import java.util.List;
@@ -110,7 +104,7 @@ public class WeatherAPIServiceTest {
 
             doReturn(searchResponseFuture).when(httpClient).sendAsync(any(),any());
 
-            List<UnsavedLocationDTO> unsaved = weatherAPIService.getLocationsByCityName(CITY_NAME);
+            List<UnsavedLocationDTO> unsaved = weatherAPIService.searchByCityName(CITY_NAME);
 
             assertThat(LOCATION_SAVE_DTO_DTO.getName()).isIn(unsaved.stream().map(UnsavedLocationDTO::name).toList());
         }
@@ -126,7 +120,7 @@ public class WeatherAPIServiceTest {
 
             doReturn(searchResponseFuture).when(httpClient).sendAsync(any(),any());
 
-            Exception exception = assertThrows(Exception.class, () -> weatherAPIService.getLocationsByCityName("dummy_city"));
+            Exception exception = assertThrows(Exception.class, () -> weatherAPIService.searchByCityName("dummy_city"));
 
             assertThat(exception.getMessage()).contains(expectedErrorMessage);
         }

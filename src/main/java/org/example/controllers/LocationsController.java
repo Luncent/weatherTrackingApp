@@ -7,20 +7,23 @@ import org.example.controllers.cookies.CookieHandler;
 import org.example.dto.locations.LocationPageDTO;
 import org.example.dto.locations.LocationSaveDTO;
 import org.example.entities.User;
-import org.example.exceptions.EntityExistsException;
-import org.example.exceptions.EntityNotFoundException;
-import org.example.exceptions.NoAvailableSessionException;
+import org.example.exception_handling.exceptions.NoAvailableSessionException;
 import org.example.model.Coordinate;
 import org.example.services.LocationService;
 import org.example.services.SessionService;
 import org.example.services.WeatherAPIService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 
-import static java.util.List.of;
+import static java.net.URLEncoder.encode;
 
 @Controller
 @RequestMapping("app")
@@ -36,7 +39,7 @@ public class LocationsController {
 
     @GetMapping
     public String myLocations(@RequestParam(required = false, name = "currentPage") Integer currentPage,
-                              Model model, HttpServletRequest request) throws Exception {
+                              Model model, HttpServletRequest request){
         try {
             UUID sessionId = cookieHandler.getSessionCookie(request);
             User user = sessionService.findByIdAndCheckActive(sessionId).getUser();
@@ -54,7 +57,7 @@ public class LocationsController {
     }
 
     @GetMapping("/locations/search")
-    public String locations(@RequestParam("city") String city, Model model, HttpServletRequest request) throws Exception {
+    public String searchLocations(@RequestParam("city") String city, Model model, HttpServletRequest request){
         try {
             UUID sessionId = cookieHandler.getSessionCookie(request);
             String username = sessionService.findByIdAndCheckActive(sessionId).getUser().getLogin();
@@ -63,7 +66,7 @@ public class LocationsController {
             log.debug("{} session not found", request.getRequestURI());
         }
 
-        model.addAttribute("resultCities", weatherAPIService.getLocationsByCityName(city));
+        model.addAttribute("resultCities", weatherAPIService.searchByCityName(city));
         model.addAttribute("searchingCity", city);
         return "search_locations";
     }
@@ -71,7 +74,7 @@ public class LocationsController {
     //TODO show error message if location already saved
     @PostMapping("/locations")
     public String save(LocationSaveDTO location, @RequestParam("searchVal") String searchVal,
-                       Model model, HttpServletRequest request) throws EntityExistsException {
+                       Model model, HttpServletRequest request) {
         try {
             UUID sessionId = cookieHandler.getSessionCookie(request);
             User user = sessionService.findByIdAndCheckActive(sessionId).getUser();
@@ -81,13 +84,13 @@ public class LocationsController {
             log.debug("{} session not found", request.getRequestURI());
         }
 
-        return "redirect:/app/locations/search?city="+searchVal;
+        return "redirect:/app/locations/search?city="+ encode(searchVal, StandardCharsets.UTF_8);
     }
 
     @PostMapping("/locations/delete")
     public String delete(Coordinate coordinate,
                          @RequestParam("currentPage") Integer currentPage,
-                         HttpServletRequest request) throws EntityNotFoundException {
+                         HttpServletRequest request){
         try {
             UUID sessionId = cookieHandler.getSessionCookie(request);
             User user = sessionService.findByIdAndCheckActive(sessionId).getUser();

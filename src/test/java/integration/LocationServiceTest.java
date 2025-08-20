@@ -1,10 +1,10 @@
 package integration;
 
 import annotations.IT;
+import jakarta.persistence.EntityNotFoundException;
 import org.example.entities.Location;
-import org.example.exceptions.EntityExistsException;
-import org.example.exceptions.EntityNotFoundException;
-import org.example.exceptions.UnauthorizedException;
+import org.example.exception_handling.exceptions.repository.EntityExistsException;
+import org.example.exception_handling.exceptions.UnauthorizedException;
 import org.example.model.Coordinate;
 import org.example.services.LocationService;
 import org.hibernate.SessionFactory;
@@ -17,7 +17,6 @@ import static java.lang.Double.parseDouble;
 import static java.math.BigDecimal.valueOf;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
-import static test_constants.LocationDTOConstants.LOCATION_SAVE_DTO_DTO;
 import static test_constants.LocationDTOConstants.LOCATION_SAVE_DTO_DTO;
 
 @IT

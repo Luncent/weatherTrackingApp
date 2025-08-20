@@ -1,6 +1,7 @@
 package org.example.repositories.repos_impl;
 
 import org.example.entities.User;
+import org.example.exception_handling.exceptions.repository.DBException;
 import org.example.repositories.BaseRepository;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -18,11 +19,15 @@ public class UserRepository extends BaseRepository<User, Long> {
     }
 
     public Optional<User> findByLogin(String login) {
-        Session session = sessionFactory.getCurrentSession();
-        Optional<User> optional = Optional.ofNullable(session.createQuery("from User where login = :login", clazz)
-                .setParameter("login", login)
-                .uniqueResult());
+        try {
+            Session session = sessionFactory.getCurrentSession();
+            Optional<User> optional = Optional.ofNullable(session.createQuery("from User where login = :login", clazz)
+                    .setParameter("login", login)
+                    .uniqueResult());
 
-        return optional;
+            return optional;
+        }catch (Exception e) {
+            throw new DBException(e);
+        }
     }
 }

@@ -8,6 +8,6 @@ public interface CRUDRepository<T, K extends Serializable> {
     T save(T entity);
     Optional<T> getById(K id);
     T update(T entity);
-    void delete(K id);
+    void deleteById(K id);
     List<T> getAll();
 }
