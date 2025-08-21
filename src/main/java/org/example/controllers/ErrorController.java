@@ -13,6 +13,7 @@ public class ErrorController {
     @GetMapping
     public String error(@RequestParam(name = "message") String message,
                         Model model) {
+        model.addAttribute("message", message);
         return "error";
     }
 }

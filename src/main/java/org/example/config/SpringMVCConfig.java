@@ -54,6 +54,11 @@ public class SpringMVCConfig implements WebMvcConfigurer {
         return templateEngine;
     }
 
+    @Bean
+    public ThreadLocalCleanUpInterceptor cleanUpInterceptor() {
+        return new ThreadLocalCleanUpInterceptor();
+    }
+
     @Override
     public void configureViewResolvers(ViewResolverRegistry registry) {
         ThymeleafViewResolver resolver = new ThymeleafViewResolver();
@@ -83,11 +88,6 @@ public class SpringMVCConfig implements WebMvcConfigurer {
         return validator;
     }
 
-    @Bean
-    public ThreadLocalCleanUpInterceptor cleanUpInterceptor() {
-        return new ThreadLocalCleanUpInterceptor();
-    }
-
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(cleanUpInterceptor());
@@ -99,8 +99,11 @@ public class SpringMVCConfig implements WebMvcConfigurer {
         public void afterCompletion(HttpServletRequest request,
                                     HttpServletResponse response,
                                     Object handler, Exception ex) {
-            log.debug("Cleaning up thread local variables");
-            AuthContextHolder.cleanUp();
+            String prefix = request.getContextPath();
+            if(request.getRequestURI().matches(prefix+"/app.*")) {
+                log.debug("Cleaning up thread local variables");
+                AuthContextHolder.cleanUp();
+            }
         }
     }
 

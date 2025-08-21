@@ -8,17 +8,20 @@ import org.example.exception_handling.exceptions.repository.DBException;
 import org.example.exception_handling.exceptions.repository.EntityExistsException;
 import org.example.exception_handling.exceptions.service.AuthException;
 import org.example.exception_handling.exceptions.weather_api.WeatherApiException;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import static org.example.utils.ControllersUtil.getErrorsMessages;
 
 @ControllerAdvice
 @Log4j2
 public class GlobalExceptionHandler {
 
 
-    //TODO redirect on error?
+    //TODO redirect on error in all methods otherwise browsel url not /error?
     @ExceptionHandler(WeatherApiException.class)
     public ModelAndView handleWeatherApiException(final WeatherApiException weatherApiException) {
         log.error(weatherApiException.getMessage(), weatherApiException);
@@ -57,6 +60,20 @@ public class GlobalExceptionHandler {
     public ModelAndView handleException(final Throwable throwable) {
         log.error(throwable.getMessage(), throwable);
         return supplyModelAndView("error", " shit something went wrong");
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ModelAndView handleMethodArgumentNotValidException(final MethodArgumentNotValidException ex,
+                                                              RedirectAttributes redirectAttributes) {
+        log.error("validation errors ", ex);
+        redirectAttributes.addFlashAttribute("errors", getErrorsMessages(ex.getAllErrors()));
+        String rejectedDtoName = ex.getObjectName();
+        String page = switch(rejectedDtoName){
+            case "userLoginDTO" -> "redirect:/app/login";
+            case "userRegistrationDTO" -> "redirect:/app/registration";
+            default -> "redirect:/app/error";
+        };
+        return new ModelAndView(page);
     }
 
     private ModelAndView supplyModelAndView(String viewName, String errorMessage) {

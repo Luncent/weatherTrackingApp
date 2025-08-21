@@ -7,7 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.example.entities.User;
 import org.example.exception_handling.exceptions.NoAvailableSessionException;
-import org.example.model.Authorization;
+import org.example.model.Authentication;
 import org.example.services.SessionService;
 import org.example.utils.AuthContextHolder;
 import org.example.utils.CookieHandler;
@@ -42,6 +42,7 @@ public class AuthFilter implements Filter {
         URLS_WITHOUT_AUTHORIZATION.add("/app/login");
         URLS_WITHOUT_AUTHORIZATION.add("/app/registration");
         URLS_WITHOUT_AUTHORIZATION.add("/app/sign_out");
+        URLS_WITHOUT_AUTHORIZATION.add("/app/error.*");
     }
 
     private final CookieHandler cookieHandler;
@@ -66,6 +67,7 @@ public class AuthFilter implements Filter {
                     filterChain.doFilter(request, response);
                     return;
                 } catch (NoAvailableSessionException e) {
+                    log.debug("tying to access secured uri: {} without active session", request.getRequestURI());
                     String contextPath = request.getContextPath();
                     String redirectPath = contextPath+"/app/login";
                     response.setStatus(HttpStatus.UNAUTHORIZED.value());
@@ -85,6 +87,7 @@ public class AuthFilter implements Filter {
                     return;
                 } catch (NoAvailableSessionException e) {
                     AuthContextHolder.setAuthContext(Optional.empty());
+                    log.debug("{} session not found", request.getRequestURI());
                     filterChain.doFilter(request, response);
                     return;
                 }
@@ -102,11 +105,11 @@ public class AuthFilter implements Filter {
     private void produceAuthorization(HttpServletRequest request) throws NoAvailableSessionException, IOException, ServletException {
         UUID sessionId = cookieHandler.getSessionCookie(request);
         User user = sessionService.findByIdAndCheckActive(sessionId).getUser();
-        Authorization authorization = Authorization.builder()
+        Authentication authentication = Authentication.builder()
                 .id(user.getId())
                 .username(user.getLogin())
                 .build();
-        AuthContextHolder.setAuthContext(Optional.of(authorization));
+        AuthContextHolder.setAuthContext(Optional.of(authentication));
     }
 
     @Override
