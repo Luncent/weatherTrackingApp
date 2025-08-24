@@ -12,7 +12,8 @@ import java.net.http.HttpClient;
 @Configuration
 @ComponentScan(basePackages = {"org.example"})
 @EnableAspectJAutoProxy(proxyTargetClass = true)
-@PropertySource("classpath:application-${spring.profiles.active}.properties")
+@PropertySource({"classpath:application-${spring.profiles.active}.properties",
+"classpath:application.properties"})
 public class AppConfig {
 
     @Bean
