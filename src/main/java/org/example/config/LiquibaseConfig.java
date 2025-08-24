@@ -8,9 +8,10 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.core.env.Environment;
 
 import javax.sql.DataSource;
+import java.util.Arrays;
 import java.util.Objects;
 
-@Profile("proddd")
+@Profile("prod")
 @Configuration
 public class LiquibaseConfig {
     private final DataSource dataSource;
@@ -24,9 +25,15 @@ public class LiquibaseConfig {
     public SpringLiquibase getLiquibaseBean(Environment env){
         SpringLiquibase liquibase = new SpringLiquibase();
         liquibase.setDataSource(dataSource);
+        String[] activeProfiles = env.getActiveProfiles();
+        boolean testProfile = Arrays.asList(activeProfiles).contains("test");
+
         liquibase.setChangeLog("classpath:/db.changelog/changelog-master.xml");
-        if(Objects.equals(env.getProperty("spring.profiles.active"), "test")){
+        if(testProfile){
             liquibase.setContexts("test, ");
+        }
+        else {
+            liquibase.setContexts("none");
         }
         liquibase.setShouldRun(true);
         return liquibase;
