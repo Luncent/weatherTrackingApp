@@ -18,9 +18,9 @@ import java.util.Optional;
 @Transactional
 @Scope(proxyMode = ScopedProxyMode.TARGET_CLASS)
 public abstract class BaseRepository<T, K extends Serializable> implements CRUDRepository<T, K> {
-    protected Class<T> clazz;
-    protected SessionFactory sessionFactory;
-    protected String idFieldName;
+    protected final Class<T> clazz;
+    protected final SessionFactory sessionFactory;
+    protected final String idFieldName;
 
     public BaseRepository(SessionFactory sessionFactory, Class<T> clazz) {
         this.sessionFactory = sessionFactory;
@@ -84,7 +84,7 @@ public abstract class BaseRepository<T, K extends Serializable> implements CRUDR
     public void deleteById(K id) {
         try {
             Session session = sessionFactory.getCurrentSession();
-            session.createQuery("DELETE FROM " + clazz.getName() + " WHERE " + idFieldName + " = :id", clazz)
+            session.createQuery("DELETE FROM " + clazz.getName() + " WHERE " + idFieldName + " = :id")
                     .setParameter("id", id)
                     .executeUpdate();
         } catch (Exception ex) {

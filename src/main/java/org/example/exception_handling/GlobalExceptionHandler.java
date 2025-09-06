@@ -2,8 +2,6 @@ package org.example.exception_handling;
 
 import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.log4j.Log4j2;
-import org.example.entities.Location;
-import org.example.entities.User;
 import org.example.exception_handling.exceptions.repository.DBException;
 import org.example.exception_handling.exceptions.repository.EntityExistsException;
 import org.example.exception_handling.exceptions.service.AuthException;
@@ -14,24 +12,25 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+
 import static org.example.utils.ControllersUtil.getErrorsMessages;
 
 @ControllerAdvice
 @Log4j2
 public class GlobalExceptionHandler {
 
-
-    //TODO redirect on error in all methods otherwise browsel url not /error?
     @ExceptionHandler(WeatherApiException.class)
     public ModelAndView handleWeatherApiException(final WeatherApiException weatherApiException) {
         log.error(weatherApiException.getMessage(), weatherApiException);
-        return supplyModelAndView("error", "Error with weather API");
+        return supplyModelAndViewForError("Error with weather API");
     }
 
     @ExceptionHandler(EntityExistsException.class)
     public ModelAndView handleEntityExistsException(final EntityExistsException entityExistsException) {
         log.error(entityExistsException.getMessage(), entityExistsException);
-        return supplyModelAndView("error", entityExistsException.getMessage()+" already exists");
+        return supplyModelAndViewForError(entityExistsException.getMessage()+" already exists");
     }
 
     @ExceptionHandler(DBException.class)
@@ -53,13 +52,13 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(EntityNotFoundException.class)
     public ModelAndView handleEntityNotFoundException(final EntityNotFoundException ex) {
         log.error(ex.getMessage(), ex);
-        return supplyModelAndView("error", ex.getMessage());
+        return supplyModelAndViewForError(ex.getMessage());
     }
 
     @ExceptionHandler(RuntimeException.class)
     public ModelAndView handleException(final Throwable throwable) {
         log.error(throwable.getMessage(), throwable);
-        return supplyModelAndView("error", " shit something went wrong");
+        return supplyModelAndViewForError(" shit something went wrong");
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -76,10 +75,9 @@ public class GlobalExceptionHandler {
         return new ModelAndView(page);
     }
 
-    private ModelAndView supplyModelAndView(String viewName, String errorMessage) {
+    private ModelAndView supplyModelAndViewForError(String errorMessage) {
         ModelAndView modelAndView = new ModelAndView();
-        modelAndView.addObject("message", errorMessage);
-        modelAndView.setViewName(viewName);
+        modelAndView.setViewName("redirect:/app/error?message=" + URLEncoder.encode(errorMessage, StandardCharsets.UTF_8));
         return modelAndView;
     }
 }

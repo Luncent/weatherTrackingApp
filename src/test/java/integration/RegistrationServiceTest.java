@@ -39,7 +39,7 @@ public class RegistrationServiceTest {
     }
 
     @Test
-    public void registrationWithExistingLogin() throws Exception {
+    public void registrationWithExistingLogin() {
         registrationService.register(ANDREW.getLogin(), ANDREW.getPassword());
         assertThrows(EntityExistsException.class, () -> registrationService
                 .register(ANDREW.getLogin(), ANDREW.getPassword()));

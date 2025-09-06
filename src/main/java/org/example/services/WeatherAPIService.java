@@ -39,36 +39,36 @@ public class WeatherAPIService {
         this.httpClient = httpClient;
     }
 
-    public List<LocationWeatherDTO> getLocationsWeatherByCoordinates(List<LocationData> locationDataList){
-        List<LocationWeatherDTO> locationWeatherDTOList = new ArrayList<>();
-        List<CompletableFuture<HttpResponse<String>>> futures = new LinkedList<>();
+    public List<LocationWeatherDTO> getLocationsWeatherByCoordinates(List<LocationData> locations){
+        List<LocationWeatherDTO> locationWeatherList = new ArrayList<>();
+        List<CompletableFuture<HttpResponse<String>>> weatherResponses = new LinkedList<>();
 
         try {
             //starting all requests non-blocking way
-            for (LocationData location : locationDataList) {
-                futures.add(getFutureLocation(location.getCoordinate()));
+            for (LocationData location : locations) {
+                weatherResponses.add(getWeatherResponse(location.getCoordinate()));
             }
 
-            for (CompletableFuture<HttpResponse<String>> future : futures) {
-                String jsonBody = proccessResponse(future.get());
+            for (CompletableFuture<HttpResponse<String>> weatherResponse : weatherResponses) {
+                String jsonBody = proccessResponse(weatherResponse.get());
                 LocationWeatherDTO weatherDTO = locationMapper.mapToWeatherInfo(jsonBody);
 
-                LocationData locationData = locationDataList.removeFirst();
+                LocationData locationData = locations.removeFirst();
                 weatherDTO.setCity(locationData.getName());
                 weatherDTO.setLatitude(locationData.getLatitude());
                 weatherDTO.setLongitude(locationData.getLongitude());
 
-                locationWeatherDTOList.add(weatherDTO);
+                locationWeatherList.add(weatherDTO);
             }
         }
         catch (Exception ex){
             throw new WeatherApiException(ex);
         }
 
-        return locationWeatherDTOList;
+        return locationWeatherList;
     }
 
-    private CompletableFuture<HttpResponse<String>> getFutureLocation(Coordinate coordinate) throws URISyntaxException {
+    private CompletableFuture<HttpResponse<String>> getWeatherResponse(Coordinate coordinate) throws URISyntaxException {
         HttpRequest getRequest = HttpRequest.newBuilder()
                 .uri(new URI(String.format(getLocationWeatherByCoordinatesRequestTemplate, coordinate.getLatitude(), coordinate.getLongitude())))
                 .GET()

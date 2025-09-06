@@ -14,7 +14,7 @@ public class AnnotationConfigDispatcherServletInitializer extends AbstractAnnota
 
         DelegatingFilterProxy delegatingFilter = new DelegatingFilterProxy("authFilter");
         FilterRegistration.Dynamic  filterRegistration = servletContext.addFilter("authFilter", delegatingFilter);
-        filterRegistration.addMappingForUrlPatterns(null, false, "/app/*");
+        filterRegistration.addMappingForUrlPatterns(null, false, "/*");
         super.onStartup(servletContext);
     }
 

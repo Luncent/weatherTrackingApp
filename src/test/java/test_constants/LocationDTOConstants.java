@@ -2,7 +2,6 @@ package test_constants;
 
 import org.example.dto.locations.LocationSaveDTO;
 import org.example.dto.locations.LocationWeatherDTO;
-import org.example.dto.locations.UnsavedLocationDTO;
 
 import static java.math.BigDecimal.valueOf;
 

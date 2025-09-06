@@ -31,6 +31,7 @@ public class AuthFilter implements Filter {
     private static final Set<String> URLS_WITH_OPTIONAL_AUTH = new HashSet<>();
     private static final Set<String> URLS_WITHOUT_AUTHORIZATION = new HashSet<>();
     private static final Set<String> AUTHORIZED_URLS = new HashSet<>();
+    private static final String RESOURCE_URL_TEMPLATE = "/static.*";
 
     static {
         URLS_WITH_OPTIONAL_AUTH.add("/app");
@@ -53,6 +54,11 @@ public class AuthFilter implements Filter {
         HttpServletRequest request = (HttpServletRequest) servletRequest;
         HttpServletResponse response = (HttpServletResponse) servletResponse;
 
+        if(request.getRequestURI().matches(request.getContextPath()+RESOURCE_URL_TEMPLATE)) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+
         for(String url : URLS_WITHOUT_AUTHORIZATION) {
             if(request.getRequestURI().matches(request.getContextPath()+url)) {
                 filterChain.doFilter(request, response);
@@ -63,7 +69,7 @@ public class AuthFilter implements Filter {
         for(String url : AUTHORIZED_URLS) {
             if(request.getRequestURI().matches(request.getContextPath()+url)) {
                 try {
-                    produceAuthorization(request);
+                    getConfirmedAuthentication(request);
                     filterChain.doFilter(request, response);
                     return;
                 } catch (NoAvailableSessionException e) {
@@ -82,7 +88,7 @@ public class AuthFilter implements Filter {
             if (request.getRequestURI().matches(request.getContextPath()+url)) {
 
                 try {
-                    produceAuthorization(request);
+                    getConfirmedAuthentication(request);
                     filterChain.doFilter(request, response);
                     return;
                 } catch (NoAvailableSessionException e) {
@@ -102,7 +108,7 @@ public class AuthFilter implements Filter {
 
     }
 
-    private void produceAuthorization(HttpServletRequest request) throws NoAvailableSessionException, IOException, ServletException {
+    private void getConfirmedAuthentication(HttpServletRequest request) throws NoAvailableSessionException{
         UUID sessionId = cookieHandler.getSessionCookie(request);
         User user = sessionService.findByIdAndCheckActive(sessionId).getUser();
         Authentication authentication = Authentication.builder()

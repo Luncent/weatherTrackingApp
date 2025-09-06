@@ -7,16 +7,11 @@ import org.example.utils.AuthContextHolder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.StringHttpMessageConverter;
-import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
-import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.validation.Validator;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
-import org.springframework.validation.beanvalidation.OptionalValidatorFactoryBean;
-import org.springframework.web.filter.CharacterEncodingFilter;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.config.annotation.*;
 import org.thymeleaf.spring6.SpringTemplateEngine;
@@ -84,8 +79,7 @@ public class SpringMVCConfig implements WebMvcConfigurer {
 
     @Override
     public Validator getValidator() {
-        Validator validator = new LocalValidatorFactoryBean();
-        return validator;
+        return new LocalValidatorFactoryBean();
     }
 
     @Override

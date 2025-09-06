@@ -65,7 +65,7 @@ public class LocationServiceTest {
     }
 
     @Test
-    public void userDeletesHisOwnLocation() throws UnauthorizedException, EntityNotFoundException {
+    public void userDeletesHisOwnLocation() throws EntityNotFoundException {
         Long userId = 1L;
         assertDoesNotThrow(()->locationService.delete(COORDINATE, userId));
     }

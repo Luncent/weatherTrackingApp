@@ -9,7 +9,6 @@ import org.springframework.core.env.Environment;
 
 import javax.sql.DataSource;
 import java.util.Arrays;
-import java.util.Objects;
 
 @Profile("prod")
 @Configuration

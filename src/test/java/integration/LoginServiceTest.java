@@ -40,7 +40,7 @@ public class LoginServiceTest {
 
     @Test
     @DisplayName("user logins with wrong password or login")
-    public void userGetsExceptionWhenLoginWithWrongPasswordOrLogin() throws Exception {
+    public void userGetsExceptionWhenLoginWithWrongPasswordOrLogin() {
         registrationService.register(ANDREW.getLogin(), ANDREW.getPassword());
         assertAll(
                 ()->assertThrows(EntityNotFoundException.class, ()->loginService.login("wrong", ANDREW.getPassword())),

@@ -49,4 +49,9 @@
 
     </changeSet>
 
+    <changeSet id="1757185362642-1" author="Dima (generated)">
+        <dropUniqueConstraint tableName="locations" constraintName="locations_latitude_longitude_key"/>
+        <addUniqueConstraint tableName="locations" columnNames="latitude, longitude, user_id"/>
+    </changeSet>
+
 </databaseChangeLog>

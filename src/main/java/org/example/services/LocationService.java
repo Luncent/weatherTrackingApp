@@ -56,28 +56,27 @@ public class LocationService {
         List<Location> locations = locationRepository.getPage(pageNumber, userID);
         Long lastPageNumber = locationRepository.getPageCount(userID);
 
-        List<LocationWeatherDTO> locationWeatherDTOS = new ArrayList<>();
+        List<LocationWeatherDTO> locationWeatherList = new ArrayList<>();
         List<LocationData> cacheAbsentLocations = new ArrayList<>();
         for (Location location : locations) {
-
             Coordinate coordinate = new Coordinate(location.getLatitude(), location.getLongitude());
-            LocationWeatherDTO dto = null;
-            if ((dto = locationWeatherCache.getIfPresent(coordinate)) == null) {
+            LocationWeatherDTO cachedLocation = null;
+            if ((cachedLocation = locationWeatherCache.getIfPresent(coordinate)) == null) {
                 log.debug("could not find location with such coordinate in cache {}", coordinate);
                 cacheAbsentLocations.add(new LocationData(coordinate, location.getName(),
                         location.getLatitude(), location.getLongitude()));
             } else {
                 log.debug(" location with coordinates {} found in cache", coordinate);
-                locationWeatherDTOS.add(dto);
+                locationWeatherList.add(cachedLocation);
             }
         }
 
-        for (LocationWeatherDTO weatherDTO : weatherAPIService.getLocationsWeatherByCoordinates(cacheAbsentLocations)) {
-            locationWeatherCache.put(new Coordinate(weatherDTO.getLatitude(), weatherDTO.getLongitude()), weatherDTO);
-            locationWeatherDTOS.add(weatherDTO);
+        for (LocationWeatherDTO locationWeather : weatherAPIService.getLocationsWeatherByCoordinates(cacheAbsentLocations)) {
+            locationWeatherCache.put(new Coordinate(locationWeather.getLatitude(), locationWeather.getLongitude()), locationWeather);
+            locationWeatherList.add(locationWeather);
         }
 
-        return new LocationPageDTO(locationWeatherDTOS, pageNumber, lastPageNumber);
+        return new LocationPageDTO(locationWeatherList, pageNumber, lastPageNumber);
     }
 
 }

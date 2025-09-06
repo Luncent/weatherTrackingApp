@@ -9,13 +9,13 @@ import java.util.Optional;
 @Component
 @Log4j2
 public class AuthContextHolder {
-    private static ThreadLocal<Optional<Authentication>> authContextHolder = new ThreadLocal<>();
+    private static final ThreadLocal<Optional<Authentication>> authContextHolder = new ThreadLocal<>();
 
     public static void setAuthContext(Optional<Authentication> auth) {
         authContextHolder.set(auth);
     }
 
-    public static Optional<Authentication> getAuthContext() {
+    public static Optional<Authentication> getAuthentication() {
         return authContextHolder.get();
     }
 

@@ -28,14 +28,16 @@ import static java.net.URLEncoder.encode;
 @Log4j2
 public class LocationsController {
 
+    private static final Integer DEFAULT_PAGE_NUMBER = 1;
+
     private final LocationService locationService;
     private final WeatherAPIService weatherAPIService;
 
     @GetMapping
     public String myLocations(@RequestParam(required = false, name = "currentPage") Integer currentPage,
                               Model model){
-        setUserNameAndPerformAction(model, (model2, auth)  -> {
-            LocationPageDTO page = locationService.selectPaginated(currentPage==null ? 1 : currentPage, auth.getId());
+        fillModelWithUsernameAndSpecificData(model, (model2, auth)  -> {
+            LocationPageDTO page = locationService.selectPaginated(currentPage==null ? DEFAULT_PAGE_NUMBER : currentPage, auth.getId());
             model2.addAttribute("myLocations", page);
         });
         return "my_locations";
@@ -43,7 +45,7 @@ public class LocationsController {
 
     @GetMapping("/locations/search")
     public String searchLocations(@RequestParam("city") String city, Model model){
-        setUserNameAndPerformAction(model, null);
+        fillModelWithUsernameAndSpecificData(model, null);
         model.addAttribute("resultCities", weatherAPIService.searchByCityName(city));
         model.addAttribute("searchingCity", city);
         return "search_locations";
@@ -52,25 +54,23 @@ public class LocationsController {
     @PostMapping("/locations/add")
     public String save(LocationSaveDTO location, @RequestParam("searchVal") String searchVal,
                        Model model) {
-        setUserNameAndPerformAction(model, (model2, auth) -> {
-            locationService.save(location, auth.getId());
-        });
+        fillModelWithUsernameAndSpecificData(model, (model2, auth) -> locationService.save(location, auth.getId()));
         return "redirect:/app/locations/search?city="+ encode(searchVal, StandardCharsets.UTF_8);
     }
 
     @PostMapping("/locations/delete")
     public String delete(Coordinate coordinate,
                          @RequestParam("currentPage") Integer currentPage){
-        locationService.delete(coordinate, AuthContextHolder.getAuthContext().get().getId());
+        locationService.delete(coordinate, AuthContextHolder.getAuthentication().get().getId());
         return "redirect:/app?currentPage="+currentPage;
     }
 
-    private void setUserNameAndPerformAction(Model model, BiConsumer<Model, Authentication> consumer) {
-        Optional<Authentication> optionalAuth = AuthContextHolder.getAuthContext();
+    private void fillModelWithUsernameAndSpecificData(Model model, BiConsumer<Model, Authentication> dataFillingAction) {
+        Optional<Authentication> optionalAuth = AuthContextHolder.getAuthentication();
         if(optionalAuth.isPresent()){
             Authentication auth = optionalAuth.get();
             model.addAttribute("username", auth.getUsername());
-            if(consumer!=null) consumer.accept(model, auth);
+            if(dataFillingAction!=null) dataFillingAction.accept(model, auth);
         }
     }
 

@@ -7,9 +7,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class ControllersUtil {
-    public static String getErrorsMessages(List<ObjectError> errors) {
+    public static List<String> getErrorsMessages(List<ObjectError> errors) {
         return errors.stream()
                 .map(DefaultMessageSourceResolvable::getDefaultMessage)
-                .collect(Collectors.joining(", "));
+                .collect(Collectors.toList());
     }
 }
